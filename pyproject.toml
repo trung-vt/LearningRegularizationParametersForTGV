@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mri"
+version = "0.0.0"
+description = "Learn regularisation parameter maps for MRI image reconstruction using U-Net."
+authors = [
+    { name = "trung-vt", email = "trung.vuthanh24@gmail.com" }
+]
+dependencies = [
+    "torch",
+    "wheel"
+]
+
+[tool.setuptools.packages.find]
+include = [
+    "config",
+    "data",
+    "encoding_objects",
+    "gradops",
+    "networks",
+    "pdhg",
+    "scripts",
+    "utils"
+]

@@ -1,0 +1,58 @@
+numpy==1.23.4   # numpy version 1.23.4 could not be installed on my Windows machine.
+                  #   ModuleNotFoundError: No module named 'distutils'
+
+# numpy==2.1.0    # numpy version 2.1.0 with torch==2.3.1 caused problems on my Windows machine:
+#                 #   UserWarning: Failed to initialize NumPy: _ARRAY_API not found
+#                 #   RuntimeError: Numpy is not available
+# # A module that was compiled using NumPy 1.x cannot be run in
+# # NumPy 2.1.0 as it may crash. To support both 1.x and 2.x
+# # versions of NumPy, modules must be compiled with NumPy 2.0.
+# # Some module may need to rebuild instead e.g. with 'pybind11>=2.12'.
+
+# # If you are a user of the module, the easiest solution will be to
+# # downgrade to 'numpy<2' or try to upgrade the affected module.
+# # We expect that some modules will need time to support NumPy 2.
+
+# numpy==1.22.0   # numpy version 1.22.0 caused problems on my Windows machine:
+#                 #   AttributeError: module 'pkgutil' has no attribute 'ImpImporter'. Did you mean: 'zipimporter'?
+
+# numpy==1.24.1     # https://stackoverflow.com/questions/71689095/how-to-solve-the-pytorch-runtimeerror-numpy-is-not-available-without-upgrading
+                    # AttributeError: module 'pkgutil' has no attribute 'ImpImporter'. Did you mean: 'zipimporter'?
+
+# torch==2.4.0    # Windows: torch==2.4.0 caused the following error when importing.
+#                 #   OSError: [WinError 126] The specified module could not be found.
+torch==2.3.1
+scikit-learn==1.5.0
+
+torchmetrics==1.4.2         # PSNR and SSIM on GPU
+scikit-image==0.24.0        # standard PSNR and SSIM, cpu only
+pillow==10.3.0              # image loading
+
+pandas==2.2.2               # data analysis
+
+ipykernel==6.29.4   # jupyter notebook
+ipywidgets==8.1.3   # interactive, for tqdm.notebook and plotly_express
+nbformat==5.10.4
+
+plotly_express==0.4.1     # interactive plots
+seaborn==0.13.2           # data visualisation
+matplotlib==3.9.2
+
+tqdm==4.66.4        # progress bars
+# wget==3.2           # download the test data
+wandb==0.17.2       # log training progress
+
+pyyaml==6.0.2       # configuration files
+
+sithom==0.0.5 # format visualisations for latex
+
+flake8==7.1.1 # code linting
+
+gdown==5.2.0   # download pretrained models
+
+h5py            # for MRI image reconstruction (hdf5 file format?)
+mrpro           # for MRI image reconstruction
+
+neptune
+
+-e . # Important: local package installation in editable mode
