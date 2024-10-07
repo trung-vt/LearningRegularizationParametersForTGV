@@ -2,7 +2,17 @@
 
 ## Quick start
 
+If you have not installed the requirements:
+```bash
+# Assume you are in the root directory of the repository
+# and, preferably, you are in a virtual environment.
+pip install -r requirements.txt
 ```
+
+Start training:
+```bash
+# Assume you are in the root directory of the repository
+# and you have installed the requirements.
 python scripts/mri/train_mri.py --config config/example_mri_tgv_config.yaml --device cpu
 ```
 
