@@ -1,0 +1,33 @@
+# device: cpu
+device: cuda
+log:
+  model_name: zero_filled
+  save_dir: tmp/zero_filled        # Example save directory for testing
+  # save_dir: pretrained/real_model   # Choose the desired directory
+  intermediate_train_metrics_log_freq_by_iter: 30
+  intermediate_val_metrics_log_freq_by_iter: 999
+  intermediate_test_metrics_log_freq_by_iter: 1
+  metrics:
+    - PSNR
+    - SSIM
+data:
+  dataset: mri
+  data_path: tmp/mri_data
+  train_file_name: x_true_train_3000.pt
+  val_file_name: x_true_val_150.pt
+  test_file_name: x_true_test_302.pt
+  data_scale_factor: 1000
+  batch_size: 1
+
+  # train_num_samples: 10     # Made smaller for testing
+  train_num_samples: 3000  # Actual value used in the report
+  # val_num_samples: 10      # Made smaller for testing
+  val_num_samples: 150   # Actual value used in the report
+  test_num_samples: 302
+  img_size: 320
+  min_standard_deviation_sigma: 0.0
+  max_standard_deviation_sigma: 0.2
+  min_acceleration_factor_R: 4
+  max_acceleration_factor_R: 8
+train:
+  start_epoch: 0
