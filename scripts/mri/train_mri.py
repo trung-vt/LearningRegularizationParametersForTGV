@@ -71,6 +71,7 @@ if device is None:
     device = model_loader.device
 else:
     model_loader.config["device"] = device
+torch.set_default_device(device)
 print(f"Device choice: {device}")
 
 pdhg_net = model_loader.init_new_model()
