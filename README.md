@@ -5,6 +5,7 @@ This repository contains the code for the paper "..." (link to the paper) by ...
 
 ## Project status
 This project is currently being tested.
+- [ ] Test on a cluster to ensure that the code runs outside of the development environment.
 
 ## Requirements
 Please see the `requirements.txt` file for the required packages.
