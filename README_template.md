@@ -50,6 +50,40 @@ Below, you can see exemplary results for ...
 
 ### Visuals
 
+<div style="display: flex; justify-content: space-between;">
+
+  <div style="text-align: left;">
+    <img src="results/sample_0-kdata_corrupted-R_8-sigma_0_05.png"
+    alt="k-data" width="98%"/>
+    <p>k-data</p>
+  </div>
+
+  <div style="text-align: left;">
+    <img src="results/sample_0-zero_filled-R_8-sigma_0_05-PSNR_24_00-SSIM_0_6041.png"
+    alt="Zero-filled" width="98%"/>
+    <p>Zero-filled</p>
+  </div>
+
+  <div style="text-align: left;">
+    <img src="results/sample_0/R_8-sigma_0_05/T_256/sample_0-tgv-lambda1_v_0_01-lambda0_w_0_02-R_8-sigma_0_05-T_256-abs-PSNR_25_65-SSIM_0_7204.png"
+    alt="Scalar TGV" width="98%"/>
+    <p>Scalar TGV</p>
+  </div>
+
+  <div style="text-align: left;">
+    <img src="results/sample_0-u_tgv-R_8-sigma_0_05-T_256-PSNR_27_59-SSIM_0_7829.png"
+    alt="U-TGV" width="98%"/>
+    <p>U-TGV</p>
+  </div>
+
+  <div style="text-align: left;">
+    <img src="results/sample_0-ground_truth.png"
+    alt="Ground truth" width="98%"/>
+    <p>Ground truth</p>
+  </div>
+
+</div>
+
 
 ## Installation
 Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
