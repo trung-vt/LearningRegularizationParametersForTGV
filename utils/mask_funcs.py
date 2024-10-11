@@ -2,12 +2,10 @@
 # https://github.com/koflera/LearningRegularizationParameterMaps/tree/main.
 
 import torch
-import numpy as np
-from numpy.lib.stride_tricks import as_strided
 
 
 def normal_pdf(length, sensitivity):
-    return np.exp(-sensitivity * (np.arange(length) - length / 2) ** 2)
+    return torch.exp(-sensitivity * (torch.arange(length) - length / 2) ** 2)
 
 
 def cartesian_mask(shape, acc: float, sample_n: int = 10):
@@ -24,7 +22,8 @@ def cartesian_mask(shape, acc: float, sample_n: int = 10):
     TODO: Improve efficiency by using torch instead of numpy to avoid
     switching to cpu.
     """
-    N, Nx, Ny = int(np.prod(shape[:-2])), shape[-2], shape[-1]
+    N = torch.prod(torch.tensor(shape[:-2])).item()
+    Nx, Ny = shape[-2], shape[-1]
     pdf_x = normal_pdf(Nx, 0.5 / (Nx / 10.0) ** 2)
     lmda = Nx / (2.0 * acc)
     n_lines = int(Nx / acc)
@@ -33,20 +32,19 @@ def cartesian_mask(shape, acc: float, sample_n: int = 10):
     pdf_x += lmda * 1.0 / Nx
 
     if sample_n:
-        pdf_x[Nx // 2 - sample_n // 2 : Nx // 2 + sample_n // 2] = 0
-        pdf_x /= np.sum(pdf_x)
+        pdf_x[Nx // 2 - sample_n // 2: Nx // 2 + sample_n // 2] = 0
+        pdf_x /= torch.sum(pdf_x)
         n_lines -= sample_n
 
-    mask = np.zeros((N, Nx))
+    mask = torch.zeros((N, Nx))
     for i in range(N):
-        idx = np.random.choice(Nx, n_lines, False, pdf_x)
+        idx = torch.multinomial(pdf_x, n_lines, replacement=False)
         mask[i, idx] = 1
 
     if sample_n:
-        mask[:, Nx // 2 - sample_n // 2 : Nx // 2 + sample_n // 2] = 1
+        mask[:, Nx // 2 - sample_n // 2: Nx // 2 + sample_n // 2] = 1
 
-    size = mask.itemsize
-    mask = as_strided(mask, (N, Nx, Ny), (size * Nx, size, 0))
+    mask = torch.as_strided(mask, (N, Nx, Ny), (Nx, 1, 0))
 
     mask = mask.reshape(shape)
     mask = torch.rot90(
