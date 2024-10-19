@@ -47,7 +47,9 @@ unet:
   init_filters: 128
   n_blocks: 4
   activation: LeakyReLU
+  downsampling_kernel: [2, 2]
   downsampling_mode: max_pool
+  upsampling_kernel: [2, 2]
   upsampling_mode: linear_interpolation
 train:
   optimizer: Adam
