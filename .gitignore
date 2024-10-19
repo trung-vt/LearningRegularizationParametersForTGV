@@ -144,4 +144,7 @@ wandb/
 *.mat
 cuda/
 
+# Pre-trained models
 networks/pre_trained_models/mri
+pretrained/u_tgv/*.pth
+pretrained/u_tv/*.pth
