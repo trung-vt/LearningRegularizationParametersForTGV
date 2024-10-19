@@ -51,7 +51,6 @@ flake8==7.1.1 # code linting
 gdown==5.2.0   # download pretrained models
 
 h5py            # for MRI image reconstruction (hdf5 file format?)
-mrpro           # for MRI image reconstruction
 
 neptune
 
