@@ -58,7 +58,7 @@ class DataGenerator:
     ):
         undersampling_kmask = cartesian_mask(
             shape=x_true.shape,     # NOTE: Don't use shape of kdata!!!
-            acc=acceleration_factor_R)
+            acc=acceleration_factor_R).to(self.device)
         undersampled_kdata = self.EncObj.apply_A(
             x=x_true, csm=coil_sensitivity_map, mask=undersampling_kmask)
         corrupted_kdata = add_gaussian_noise(
