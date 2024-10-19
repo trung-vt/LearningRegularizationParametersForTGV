@@ -144,7 +144,7 @@ if args.logs_local:
 if args.uses_wandb:
     train_logger.init_wandb()
 
-metrics_evaluator = ImageMetricsEvaluator()
+metrics_evaluator = ImageMetricsEvaluator(device=device)
 
 num_epochs = model_loader.config["train"]["num_epochs"]
 # for epoch in tqdm(range(args.Nepochs)):

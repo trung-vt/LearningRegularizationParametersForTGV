@@ -8,11 +8,11 @@ class ImageMetricsEvaluator:
 
     def __init__(
             self,
+            device: Union[str, torch.device],
             metrics: List[str] = ["MSE", "PSNR", "SSIM"],
             data_range: Optional[Union[int, float]] = None,
             complex_to_real_conversion: Literal["abs", "view_as_real"] = "abs",
-            clips_before_comparing: bool = False,
-            device: Optional[Union[torch.device, str]] = None):
+            clips_before_comparing: bool = False):
 
         self.data_range = data_range
         self.metrics = metrics
@@ -51,8 +51,8 @@ class ImageMetricsEvaluator:
         data_range = torch.max(x_true) - torch.min(x_true)
         self.psnr_torch.data_range = data_range
         self.ssim_torch.data_range = data_range
-        psnr = self.psnr_torch(x, x_true)
-        ssim = self.ssim_torch(x, x_true)
+        psnr = self.psnr_torch(x, x_true).to(x.device)
+        ssim = self.ssim_torch(x, x_true).to(x.device)
         return psnr, ssim
 
     def compute_torch_complex(
