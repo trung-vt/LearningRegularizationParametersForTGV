@@ -95,10 +95,12 @@ def get_data_loader(
     )
 
     batch_size = data_config["batch_size"] if action != "test" else 1
+    generator = torch.Generator(device=device)
     data_loader = torch.utils.data.DataLoader(
         dataset,
         batch_size=batch_size,
         shuffle=(action == "train"),  # shuffle only for training set
+        generator=generator
         # num_workers=0,
         # pin_memory=True
     )
