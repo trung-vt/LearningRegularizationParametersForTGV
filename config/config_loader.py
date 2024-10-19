@@ -60,9 +60,7 @@ def load_config(
         else:
             raise ValueError(
                 f"The config choice '{config_choice}' is unsupported. " +
-                "Currently supported prepared IDs are " +
-                "['u_tv', 'u_tgv_type_1', 'u_tgv_type_2'], " +
-                "or supported file formats are " +
+                "Currently supported file formats are " +
                 "'.yaml' or '.yml', '.json'.")
     # print(f"root_dir: {root_dir}")
     # Adjust the paths in the config
