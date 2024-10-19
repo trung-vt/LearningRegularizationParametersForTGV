@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
+# import torch.nn.functional as F
 import math
 from typing import Union, Optional, Literal, Tuple, Dict, Callable
 
@@ -155,18 +155,22 @@ class MriPdhgNet(nn.Module):
 
     def prepare_for_cnn(self, x: torch.Tensor) -> Tuple[torch.Tensor, slice]:
         # convert to 2-channel view:
-        #   (Nb,Nx,Ny,Nt) (complex) --> (Nb,2,Ny,Ny,Nt) (real)
-        x_real = torch.view_as_real(x).moveaxis(-1, 1)
-        padmultiple = 4
-        minpad = 4
-        padsizes = [
-            getpadding(n, padmultiple, minpad) for n in x_real.shape[2:]]
-        # pad takes the padding size
-        # starting from last dimension moving forward
-        pad = [s for p in padsizes[::-1] for s in p]
-        crop = [Ellipsis] + [slice(p[0], -p[1]) for p in padsizes]
-        x_padded_real = F.pad(x_real, pad, mode=self.padding)
-        return x_padded_real, crop
+        #   (Nb,Nx,Ny,Nt) (complex) --> (Nb,2,Nx,Ny,Nt) (real)
+        x_real = torch.view_as_real(x)
+        # (Nb,2,Nx,Ny,Nt) -> (Nb,Nt,Nx,Ny,2)
+        x_real = torch.moveaxis(x_real, -1, 1)
+
+        # padmultiple = 4
+        # minpad = 4
+        # padsizes = [
+        #     getpadding(n, padmultiple, minpad) for n in x_real.shape[2:]]
+        # # pad takes the padding size
+        # # starting from last dimension moving forward
+        # pad = [s for p in padsizes[::-1] for s in p]
+        # crop = [Ellipsis] + [slice(p[0], -p[1]) for p in padsizes]
+        # x_padded_real = F.pad(x_real, pad, mode=self.padding)
+        # return x_padded_real, crop
+        return x_real
 
     def scale_lambda(self, lambdas: torch.Tensor) -> torch.Tensor:
         low_bound = 0.0 if self.low_bound is None else self.low_bound
@@ -179,11 +183,17 @@ class MriPdhgNet(nn.Module):
     def get_lambda_cnn(
             self, x: torch.Tensor
     ) -> Union[torch.Tensor, Dict[str, torch.Tensor]]:
-        x_padded_real, crop = self.prepare_for_cnn(x)
-        lambda_cnn = self.cnn(x_padded_real)
-        lambda_cnn = lambda_cnn[crop]
+        # x_padded_real, crop = self.prepare_for_cnn(x)
+        # lambda_cnn = self.cnn(x_padded_real)
+        # lambda_cnn = lambda_cnn[crop]
+        # lambda_scaled = self.scale_lambda(lambda_cnn)
+        # lambda0_w, lambda1_v = torch.chunk(lambda_scaled, 2, 1)
+
+        x_real = self.prepare_for_cnn(x)
+        lambda_cnn = self.cnn(x_real)
         lambda_scaled = self.scale_lambda(lambda_cnn)
         lambda0_w, lambda1_v = torch.chunk(lambda_scaled, 2, 1)
+
         # NOTE: Assume channel size is 1 (grayscale image).
         # Remove the channel dimension,
         #   i.e. (batch_size, 1, Nx, Ny) -> (batch_size, Nx, Ny)
