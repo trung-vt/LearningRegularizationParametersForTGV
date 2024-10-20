@@ -148,3 +148,4 @@ cuda/
 networks/pre_trained_models/mri
 pretrained/u_tgv/*.pth
 pretrained/u_tv/*.pth
+notebooks/mri/*.pt
