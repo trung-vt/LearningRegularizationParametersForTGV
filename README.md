@@ -24,6 +24,8 @@ Start training:
 # Assume you are in the root directory of the repository
 # and you have installed the requirements.
 python scripts/mri/train_mri.py --config config/example_mri_tgv_config.yaml --device cpu
+# Change to cuda for GPU or mps for Apple processors.
+# Set `--uses_wandb True` to use Weights and Biases.
 ```
 
 
