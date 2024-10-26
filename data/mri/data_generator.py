@@ -9,7 +9,7 @@ from encoding_objects.cart_2d_enc_obj import Cart2DEncObj
 class DataGenerator:
     def __init__(
             self, data_config: Union[Dict[str, Any], None],
-            device: Union[torch.device, str]):
+            device: Union[str, torch.device]):
         if data_config is not None:
             self.min_acceleration_factor_R = data_config[
                 "min_acceleration_factor_R"]
