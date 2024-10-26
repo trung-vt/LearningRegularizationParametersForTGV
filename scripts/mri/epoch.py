@@ -1,14 +1,39 @@
 import torch
-from typing import Callable, Optional, Union
+from typing import Callable, Optional, Union, Tuple, Any
 
 from networks.mri_pdhg_net import MriPdhgNet
 from scripts.mri.logger import Logger
 from utils.metrics import ImageMetricsEvaluator
+from pdhg.pdhg import TvLambdaReg, TgvLambdaReg
+
+
+def perform_iteration(
+        data: Tuple[
+            torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor],
+        model: Union[MriPdhgNet, Callable[
+            [Any], Tuple[torch.Tensor, Union[TvLambdaReg, TgvLambdaReg]]]],
+        metrics_evaluator: ImageMetricsEvaluator,
+) -> None:
+    x_corrupted, x_true, \
+        kdata_corrupted, undersampling_kmask = data
+    coil_sensitive_map = None
+
+    x_reconstructed, lambda_reg = model(
+        batch_kdata=kdata_corrupted,
+        batch_kmask=undersampling_kmask,
+        batch_x=x_corrupted,
+        batch_csmap=coil_sensitive_map)
+
+    psnr, ssim = metrics_evaluator.compute_torch_complex(
+        x=x_reconstructed, x_true=x_true)
+
+    return x_reconstructed, x_true, psnr, ssim
 
 
 def perform_epoch(
         data_iterator,
-        model: Union[MriPdhgNet, Callable],
+        model: Union[MriPdhgNet, Callable[
+            [Any], Tuple[torch.Tensor, Union[TvLambdaReg, TgvLambdaReg]]]],
         logger: Logger,
         is_training: bool,
         metrics_evaluator: ImageMetricsEvaluator,
@@ -23,24 +48,13 @@ def perform_epoch(
     max_val = -torch.inf
 
     for idx, data in enumerate(data_iterator):
-
-        x_corrupted, x_true, \
-            kdata_corrupted, undersampling_kmask = data
-        coil_sensitive_map = None
-
-        x_reconstructed, lambda_reg = model(
-            batch_kdata=kdata_corrupted,
-            batch_kmask=undersampling_kmask,
-            batch_x=x_corrupted,
-            batch_csmap=coil_sensitive_map)
+        x_reconstructed, x_true, psnr, ssim = perform_iteration(
+            data, model, metrics_evaluator)
 
         loss = torch.nn.functional.mse_loss(
             torch.view_as_real(x_reconstructed),
             torch.view_as_real(x_true)
         )
-
-        psnr, ssim = metrics_evaluator.compute_torch_complex(
-            x=x_reconstructed, x_true=x_true)
 
         new_metrics = torch.tensor([loss.detach(), psnr, ssim])
         total_metrics += new_metrics
@@ -68,8 +82,8 @@ def perform_epoch(
             data_iterator.set_postfix({
                 "loss": f"{new_metrics[0].item():.4f}",
                 # "spatial": f"{spatial_min:.2f}/{spatial_max:.2f}"
-                "psnr": f"{new_metrics[1].item():.2f}",
-                "ssim": f"{new_metrics[2].item():.4f}"
+                "PSNR": f"{new_metrics[1].item():.2f}",
+                "SSIM": f"{new_metrics[2].item():.4f}"
             })
 
     avg_metrics = total_metrics / len(data_iterator)
