@@ -177,25 +177,16 @@ class Logger:
             config=self.config,     # track hyperparameters and run metadata
         )
 
-    def log_wandb_metrics(self, metrics: torch.Tensor) -> None:
-        if self.action == "test":
-            raise ValueError("In testing mode. Will not log metrics to wandb.")
-        if wandb.run is not None:
-            wandb.log({
-                f"{self.action}_loss": metrics[0],
-                f"{self.action}_psnr": metrics[1],
-                f"{self.action}_ssim": metrics[2]
-            })
-
     def log_metrics(
-            self, metrics: torch.Tensor, iter_idx: Union[int, None]
+            self, stage: Literal["intermediate", "epoch"],
+            metrics: torch.Tensor, iter_idx: Union[int, None]
     ) -> None:
         # NOTE: Assume the metrics are ordered correctly: loss, psnr, ssim
         if wandb.run is not None:
             wandb.log({
-                f"{self.action}_loss": metrics[0],
-                f"{self.action}_psnr": metrics[1],
-                f"{self.action}_ssim": metrics[2]
+                f"{self.action}_{stage}_loss": metrics[0],
+                f"{self.action}_{stage}_PSNR": metrics[1],
+                f"{self.action}_{stage}_SSIM": metrics[2]
             })
         metrics_str = ""
         # NOTE: Assume the csv file has the correct headers:
@@ -220,7 +211,8 @@ class Logger:
         log_freq = self.log_freq_by_iter[stage]
         if (iter_idx+1) % log_freq == 0:
             avg_metrics = running_metrics / log_freq
-            self.log_metrics(metrics=avg_metrics, iter_idx=iter_idx)
+            self.log_metrics(
+                stage=stage, metrics=avg_metrics, iter_idx=iter_idx)
             # Reset running metrics
             running_metrics.zero_()
 
