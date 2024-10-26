@@ -62,7 +62,7 @@ train:
   # num_epochs: 2       # Made smaller for testing
   # num_epochs: 100   # Actual value used in the report
   num_epochs: 1000
-  expected_num_epochs: 200
+  expected_num_epochs: 50
   start_epoch: 0
   loads_pretrained: false
 pdhg:
