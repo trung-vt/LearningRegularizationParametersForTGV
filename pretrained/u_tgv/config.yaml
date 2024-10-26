@@ -64,8 +64,10 @@ train:
 unet:
   activation: LeakyReLU
   downsampling_mode: max_pool
+  downsampling_kernel: [2, 2]
   in_channels: 2
   init_filters: 128
   n_blocks: 4
   out_channels: 2
   upsampling_mode: linear_interpolation
+  upsampling_kernel: [2, 2]
