@@ -46,7 +46,7 @@ def get_dataset(
             return torch.load(
                 mkp(generated_dir, filename), map_location=device)
 
-        scaled_x_true = x_true_complex  # Assuming the data is already scaled
+        scaled_x_true = x_true_complex * scale_factor
 
         dataset = MriPreProcessedDataset(
             all_rescaled_x_true_complex=scaled_x_true,
@@ -95,12 +95,16 @@ def get_data_loader(
     )
 
     batch_size = data_config["batch_size"] if action != "test" else 1
-    generator = torch.Generator(device=device)
     data_loader = torch.utils.data.DataLoader(
         dataset,
         batch_size=batch_size,
         shuffle=(action == "train"),  # shuffle only for training set
-        generator=generator
+
+        # NOTE: You might want to comment/uncomment the following line
+        #       in order to make the code work. Sometimes you need to
+        #       init a generator to the device, sometimes you should not.
+        generator=torch.Generator(device=device),
+
         # num_workers=0,
         # pin_memory=True
     )
