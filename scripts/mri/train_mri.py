@@ -183,8 +183,10 @@ for epoch in tqdm(range(num_epochs)):
 
     if wandb.run is not None:
         wandb.log({"epoch": epoch+1})
-    train_logger.log_metrics(metrics=train_avg_metrics, iter_idx=None)
-    val_logger.log_metrics(metrics=val_avg_metrics, iter_idx=None)
+    train_logger.log_metrics(
+        stage="epoch", metrics=train_avg_metrics, iter_idx=None)
+    val_logger.log_metrics(
+        stage="epoch", metrics=val_avg_metrics, iter_idx=None)
     print(f"Epoch {epoch+1}:")
     print(
         f"TRAINING LOSS: {train_avg_metrics[0]}, " +
