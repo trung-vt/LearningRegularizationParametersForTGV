@@ -5,6 +5,21 @@ from typing import Callable, Optional, Union, Dict, Literal, Tuple, List
 from gradops.gradops_torch import GradOpsTorch
 
 
+TvLambdaReg = Union[float, torch.Tensor]
+
+
+TgvLambdaReg = Dict[
+    Literal["lambda1_v", "lambda0_w"], Union[float, torch.Tensor]]
+
+
+TvPdhgStateDict = Dict[
+    Literal["x", "v", "p", "r", "x_bar"], torch.Tensor]
+
+
+TgvPdhgStateDict = Dict[
+    Literal["x", "v", "p", "q", "r", "x_bar", "v_bar"], torch.Tensor]
+
+
 class PdhgTorch(nn.Module):
     def __init__(self, device: Union[str, torch.device]):
         super().__init__()  # Ensure proper initialisation
@@ -14,40 +29,32 @@ class PdhgTorch(nn.Module):
     def run_pdhg(
             self, iterator,  # determines how long to run algorithm for
             A: Callable, AH: Callable,
-            lambda_reg: Union[
-                float, torch.Tensor,
-                Tuple[Union[float, torch.Tensor], Union[float, torch.Tensor]]],
+            lambda_reg: Union[TvLambdaReg, TgvLambdaReg],
             z: torch.Tensor,  # measured data
-            state: Union[torch.Tensor, Dict[
-                Literal["x", "v", "p", "q", "r", "x_bar", "v_bar"],
-                torch.Tensor]],
+            state: Union[
+                torch.Tensor, Union[TvPdhgStateDict, TgvPdhgStateDict]],
             sigma: Union[float, torch.Tensor],
             tau: Union[float, torch.Tensor],
             theta: Union[float, torch.Tensor],
             return_dict: bool = False,
-            device: Optional[Union[torch.device, str]] = None
-    ) -> Union[torch.Tensor, Dict[
-            Literal["x", "v", "p", "q", "r", "x_bar", "v_bar"], torch.Tensor]]:
+            device: Optional[Union[str, torch.device]] = None
+    ) -> Union[torch.Tensor, TgvPdhgStateDict]:
         raise NotImplementedError()
 
     def forward(
             self, num_iters: int,  # number of iterations
             A: Callable, AH: Callable,
-            lambda_reg: Union[
-                float, torch.Tensor,
-                Tuple[Union[float, torch.Tensor], Union[float, torch.Tensor]]],
+            lambda_reg: Union[TvLambdaReg, TgvLambdaReg],
             z: torch.Tensor,  # measured data
-            state: Union[torch.Tensor, Dict[
-                Literal["x", "v", "p", "q", "r", "x_bar", "v_bar"],
-                torch.Tensor]],
+            state: Union[
+                torch.Tensor, Union[TvPdhgStateDict, TgvPdhgStateDict]],
             sigma: Union[float, torch.Tensor],
             tau: Union[float, torch.Tensor],
             theta: Union[float, torch.Tensor],
             return_dict: bool = False,
             tqdm_progress_bar: Optional[Callable] = None,
-            device: Optional[Union[torch.device, str]] = None
-    ) -> Union[torch.Tensor, Dict[
-            Literal["x", "v", "p", "q", "r", "x_bar", "v_bar"], torch.Tensor]]:
+            device: Optional[Union[str, torch.device]] = None
+    ) -> Union[torch.Tensor, Union[TvPdhgStateDict, TgvPdhgStateDict]]:
 
         if tqdm_progress_bar is None:
             iterator = range(num_iters)
@@ -137,9 +144,8 @@ class PdhgTorch(nn.Module):
         return x.to(device)
 
     def get_variables(
-            self, state: Union[torch.Tensor, Dict[
-                Literal["x", "v", "p", "q", "r", "x_bar", "v_bar"],
-                torch.Tensor]],
+            self, state: Union[
+                torch.Tensor, Union[TvPdhgStateDict, TgvPdhgStateDict]],
             var_names: Tuple[str]) -> List[Union[torch.Tensor, None]]:
         variables = []
         for var_name in var_names:
@@ -157,17 +163,15 @@ class TvPdhgTorch(PdhgTorch):
     def run_pdhg(
             self, iterator,  # determines how long to run algorithm for
             A: Callable, AH: Callable,
-            lambda_reg: Union[float, torch.Tensor],
+            lambda_reg: TvLambdaReg,
             z: torch.Tensor,  # measured data
-            state: Union[torch.Tensor, Dict[
-                Literal["x", "v", "p", "r", "x_bar"], torch.Tensor]],
+            state: Union[torch.Tensor, TvPdhgStateDict],
             sigma: Union[float, torch.Tensor],
             tau: Union[float, torch.Tensor],
             theta: Union[float, torch.Tensor],
             return_dict: bool = False,
-            device: Optional[Union[torch.device, str]] = None
-    ) -> Union[torch.Tensor, Dict[
-            Literal["x", "v", "p", "r", "x_bar"], torch.Tensor]]:
+            device: Optional[Union[str, torch.device]] = None
+    ) -> Union[torch.Tensor, TvPdhgStateDict]:
         """
         Adapted from Algorithm 2 from
         'Learning Regularization Parameter-Maps for Variational
@@ -226,8 +230,7 @@ class TvPdhgTorch(PdhgTorch):
 
         if return_dict:
             return {
-                "x": x, "z": z, "v": v, "p": p, "r": r,
-                "x_bar": x_bar, "device": device}
+                "x": x, "z": z, "v": v, "p": p, "r": r, "x_bar": x_bar}
         return x
 
 
@@ -238,19 +241,15 @@ class TgvPdhgTorch(PdhgTorch):
     def run_pdhg(
             self, iterator,  # determines how long to run algorithm for
             A: Callable, AH: Callable,
-            lambda_reg: Dict[
-                Literal["lambda1_v", "lambda0_w"], Union[float, torch.Tensor]],
+            lambda_reg: TgvLambdaReg,
             z: torch.Tensor,  # measured data
-            state: Union[torch.Tensor, Dict[
-                Literal["x", "v", "p", "q", "r", "x_bar", "v_bar"],
-                torch.Tensor]],
+            state: Union[torch.Tensor, TgvPdhgStateDict],
             sigma: Union[float, torch.Tensor],
             tau: Union[float, torch.Tensor],
             theta: Union[float, torch.Tensor],
             return_dict: bool = False,
-            device: Optional[Union[torch.device, str]] = None
-    ) -> Union[torch.Tensor, Dict[
-            Literal["x", "v", "p", "q", "r", "x_bar", "v_bar"], torch.Tensor]]:
+            device: Optional[Union[str, torch.device]] = None
+    ) -> Union[torch.Tensor, TgvPdhgStateDict]:
         """
         Adapted from Algorithm 2 from
         "Second Order Total Generalized Variation (TGV) for MRI"
@@ -324,6 +323,5 @@ class TgvPdhgTorch(PdhgTorch):
         if return_dict:
             return {
                 "x": x, "z": z, "v": v, "p": p, "q": q, "r": r,
-                "x_bar": x_bar, "v_bar": v_bar,
-                "device": device}
+                "x_bar": x_bar, "v_bar": v_bar}
         return x
