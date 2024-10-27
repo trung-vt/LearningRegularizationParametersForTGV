@@ -29,42 +29,34 @@ def perform_epoch(
     # min_val = torch.inf
     # max_val = -torch.inf
 
-    def epoch() -> torch.Tensor:
-        for idx, data in enumerate(data_iterator):
-            loss, psnr, ssim = perform_iteration(data)
+    for idx, data in enumerate(data_iterator):
+        loss, psnr, ssim = perform_iteration(data)
 
-            new_metrics = torch.tensor([loss.detach(), psnr, ssim])
-            # total_metrics += new_metrics
-            logger.update_and_log_metrics(
-                stage="intermediate", iter_idx=idx,
-                new_metrics=new_metrics, running_metrics=running_metrics)
+        new_metrics = torch.tensor([loss.detach(), psnr, ssim])
+        total_metrics += new_metrics
+        logger.update_and_log_metrics(
+            stage="intermediate", iter_idx=idx,
+            new_metrics=new_metrics, running_metrics=running_metrics)
 
-            if is_training:
-                # https://lightning.ai/docs/pytorch/stable/common/optimization.html
-                # (Specific for PyTorch Lightning, but same principles apply?)
-                # It is good practice to call optimizer.zero_grad() before
-                #   self.manual_backward(loss).
-                # You can call lr_scheduler.step() at arbitrary intervals.
-                optimizer.zero_grad(set_to_none=True)
-                loss.backward()
-                learning_rate_scheduler.step()
-                optimizer.step()
+        if is_training:
+            # https://lightning.ai/docs/pytorch/stable/common/optimization.html
+            # (Specific for PyTorch Lightning, but same principles apply?)
+            # It is good practice to call optimizer.zero_grad() before
+            #   self.manual_backward(loss).
+            # You can call lr_scheduler.step() at arbitrary intervals.
+            optimizer.zero_grad(set_to_none=True)
+            loss.backward()
+            learning_rate_scheduler.step()
+            optimizer.step()
 
-            if sets_tqdm_postfix:
-                # Assume the metrics are ordered correctly: loss, psnr, ssim
-                data_iterator.set_postfix({
-                    "loss": f"{new_metrics[0].item():.4f}",
-                    # "spatial": f"{spatial_min:.2f}/{spatial_max:.2f}"
-                    "PSNR": f"{new_metrics[1].item():.2f}",
-                    "SSIM": f"{new_metrics[2].item():.4f}"
-                })
-        return new_metrics
-
-    if not is_training:
-        with torch.no_grad():
-            total_metrics += epoch()
-    else:
-        total_metrics += epoch()
+        if sets_tqdm_postfix:
+            # Assume the metrics are ordered correctly: loss, psnr, ssim
+            data_iterator.set_postfix({
+                "loss": f"{new_metrics[0].item():.4f}",
+                # "spatial": f"{spatial_min:.2f}/{spatial_max:.2f}"
+                "PSNR": f"{new_metrics[1].item():.2f}",
+                "SSIM": f"{new_metrics[2].item():.4f}"
+            })
 
     avg_metrics = total_metrics / len(data_iterator)
     # print(f"min_val = {min_val}")

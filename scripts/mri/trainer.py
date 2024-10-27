@@ -146,6 +146,7 @@ class Trainer:
 
             pdhg_net.train(False)
 
+            # Stop tracking the gradients when validating to save memory.
             with torch.no_grad():
                 torch.cuda.empty_cache()
                 val_logger.current_epoch = epoch
