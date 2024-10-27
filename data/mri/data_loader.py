@@ -19,7 +19,7 @@ def get_dataset(
         gaussian_noise_standard_deviation_sigma: Optional[float] = None
 ) -> Union[
         MriBaseDataset, MriPreProcessedDataset, MriDynamicallyGeneratedDataset
-        ]:
+]:
     dir = mkp(root_dir, data_config["data_path"])
     scale_factor = data_config["data_scale_factor"]
 
@@ -55,8 +55,7 @@ def get_dataset(
             all_undersampling_kmasks=get_generated_data(
                 "undersampling_kmasks"),
             acc_factor_R=acceleration_factor_R,
-            gaussian_noise_sigma=sigma
-        )
+            gaussian_noise_sigma=sigma)
 
     elif dataset_type == "dynamically_generated":
         data_util = DataGenerator(data_config=data_config, device=device)
