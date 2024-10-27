@@ -37,11 +37,25 @@ class MriPreProcessedDataset(MriBaseDataset):
         self.all_undersampling_kmasks = all_undersampling_kmasks
         self.acc_factor_R = acc_factor_R
         self.gaussian_noise_sigma = gaussian_noise_sigma
-        print(f"\nCorrupted data shape: {all_x_corrupted.shape}")
+
+        def get_memory_size_in_MB(tensor: torch.Tensor) -> float:
+            return tensor.element_size() * tensor.nelement() / 1024 / 1024
+
+        print(
+            f"\nGround truth data shape: {all_rescaled_x_true_complex.shape}")
+        print("Memory size of ground truth: " + str(get_memory_size_in_MB(
+            all_rescaled_x_true_complex)) + " MB")
+        print(f"Corrupted data shape: {all_x_corrupted.shape}")
+        print("Memory size of corrupted data: " + str(get_memory_size_in_MB(
+            all_x_corrupted)) + " MB")
         print(f"min abs val of corrupted: {all_x_corrupted.abs().min()}")
         print(f"max abs val of corrupted: {all_x_corrupted.abs().max()}")
         print(f"\nCorrupted kdata shape: {all_kdata_corrupted.shape}")
+        print(f"Memory size of corrupted kdata: " + str(get_memory_size_in_MB(
+            all_kdata_corrupted)) + " MB")
         print(f"\nkmasks shape: {all_undersampling_kmasks.shape}")
+        print("Memory size of kmasks: " + str(get_memory_size_in_MB(
+            all_undersampling_kmasks)) + " MB")
         print()
 
     def __getitem__(self, idx):
