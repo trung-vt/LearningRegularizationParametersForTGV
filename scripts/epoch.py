@@ -1,7 +1,7 @@
 import torch
 from typing import Callable, Optional, Tuple, Any, Union
 
-from scripts.mri.logger import Logger
+from scripts.logger import Logger
 
 
 def perform_epoch(

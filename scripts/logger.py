@@ -6,7 +6,6 @@ from pathlib import Path
 from typing import Dict, Literal, Optional, Any, Union
 
 from utils.makepath import makepath as mkp
-from networks.mri_pdhg_net import MriPdhgNet
 
 
 class Logger:
@@ -120,7 +119,7 @@ class Logger:
                 out_config[key] = value
         return out_config
 
-    def log_config_local(self, pdhg_net: MriPdhgNet) -> None:
+    def log_config_local(self, pdhg_net: torch.nn.Module) -> None:
         if self.action == "test":
             raise ValueError("In testing mode. Will not log config to local.")
         config = self.convert_path_to_str(self.config)
@@ -217,7 +216,7 @@ class Logger:
             running_metrics.zero_()
 
     def save_model(
-            self, pdhg_net: MriPdhgNet, idx: Union[int, None],
+            self, pdhg_net: torch.nn.Module, idx: Union[int, None],
             is_final: bool) -> None:
         if self.action != "train":
             raise ValueError("Not in training mode. Will not save model.")

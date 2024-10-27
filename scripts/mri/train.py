@@ -8,7 +8,7 @@ from copy import deepcopy
 
 from data.mri.data_loader import get_data_loader
 from scripts.mri.model_loader import ModelLoader
-from scripts.mri.logger import Logger
+from scripts.logger import Logger
 from scripts.epoch import perform_epoch
 from utils.warmup import WarmupLR
 from utils.metrics import ImageMetricsEvaluator
