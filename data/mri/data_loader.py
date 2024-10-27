@@ -79,7 +79,8 @@ def get_data_loader(
         device: Union[str, torch.device],
         root_dir: Union[str, Path] = ".",
         acceleration_factor_R: Optional[int] = None,
-        gaussian_noise_standard_deviation_sigma: Optional[float] = None
+        gaussian_noise_standard_deviation_sigma: Optional[float] = None,
+        sets_generator: bool = False
 ) -> torch.utils.data.DataLoader:
 
     sigma = gaussian_noise_standard_deviation_sigma
@@ -99,10 +100,9 @@ def get_data_loader(
         batch_size=batch_size,
         shuffle=(action == "train"),  # shuffle only for training set
 
-        # NOTE: You might want to comment/uncomment the following line
-        #       in order to make the code work. Sometimes you need to
-        #       init a generator to the device, sometimes you should not.
-        generator=torch.Generator(device=device),
+        # # NOTE: Sometimes you need to explicitly set the generator
+        # #         to the same device for the code to work.
+        generator=torch.Generator(device=device) if sets_generator else None,
 
         # num_workers=0,
         # pin_memory=True
