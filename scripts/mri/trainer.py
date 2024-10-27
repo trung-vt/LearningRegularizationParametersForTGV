@@ -1,9 +1,20 @@
+import torch
+import wandb
+from copy import deepcopy
 from datetime import datetime
+
+from scripts.mri.model_loader import ModelLoader
+from data.mri.data_loader import get_data_loader
+from scripts.logger import Logger
+from utils.warmup import WarmupLR
+from utils.metrics import ImageMetricsEvaluator
+from scripts.epoch import perform_epoch
+from scripts.mri.mri_iteration import MriIteration
 
 
 class Trainer:
 
-    def __init__(self, args):
+    def __init__(self, args, tqdm):
 
         # device = "cuda" if torch.cuda.is_available() else "cpu"
         # device = torch.device(device)
@@ -32,16 +43,18 @@ class Trainer:
         torch.set_default_device(device)
         print(f"Device choice: {device}")
 
-        pdhg_net = model_loader.init_new_model()
+        pdhg_net = model_loader.init_new_mri_model()
         print(f"Regularization: {pdhg_net.pdhg_solver.pdhg_algorithm}")
 
         print(f"Data path: {model_loader.config['data']['data_path']}")
         training_data_loader = get_data_loader(
             data_config=model_loader.config["data"],
-            action="train", dataset_type="dynamically_generated", device=device)
+            action="train", dataset_type="dynamically_generated",
+            device=device, sets_generator=True)
         validation_data_loader = get_data_loader(
             data_config=model_loader.config["data"],
-            action="val", dataset_type="dynamically_generated", device=device)
+            action="val", dataset_type="dynamically_generated",
+            device=device)
 
         learning_rate = model_loader.config["train"]["learning_rate"]
 
@@ -80,7 +93,8 @@ class Trainer:
             force_overwrite=False
         )
         train_logger.init_metrics_logging_options()
-        train_logger.init_model_saving_options(log_config=model_loader.config["log"])
+        train_logger.init_model_saving_options(
+            log_config=model_loader.config["log"])
 
         val_logger = Logger(
             action="val",
@@ -88,7 +102,8 @@ class Trainer:
             force_overwrite=False
         )
         val_logger.init_metrics_logging_options()
-        val_logger.init_model_saving_options(log_config=model_loader.config["log"])
+        val_logger.init_model_saving_options(
+            log_config=model_loader.config["log"])
 
         # Store config and other logs if specified.
         if args.logs_local:
@@ -104,6 +119,11 @@ class Trainer:
 
         metrics_evaluator = ImageMetricsEvaluator(device=device)
 
+        mri_iteration = MriIteration(
+            model=pdhg_net,
+            metrics_evaluator=metrics_evaluator,
+        )
+
         num_epochs = model_loader.config["train"]["num_epochs"]
         # for epoch in tqdm(range(args.Nepochs)):
         # for epoch in tqdm(range(1000)):
@@ -114,11 +134,12 @@ class Trainer:
 
             training_data_iterator = tqdm(training_data_loader)
             train_avg_metrics = perform_epoch(
+                perform_iteration=mri_iteration.perform_iteration,
                 data_iterator=training_data_iterator,
-                model=pdhg_net,
+                # model=pdhg_net,
                 logger=train_logger,
                 is_training=True,
-                metrics_evaluator=metrics_evaluator,
+                # metrics_evaluator=metrics_evaluator,
                 learning_rate_scheduler=sched,
                 optimizer=optim,
                 sets_tqdm_postfix=True)
@@ -131,11 +152,12 @@ class Trainer:
 
                 validation_data_iterator = tqdm(validation_data_loader)
                 val_avg_metrics = perform_epoch(
+                    perform_iteration=mri_iteration.perform_iteration,
                     data_iterator=validation_data_iterator,
-                    model=pdhg_net,
+                    # model=pdhg_net,
                     logger=val_logger,
                     is_training=False,
-                    metrics_evaluator=metrics_evaluator,
+                    # metrics_evaluator=metrics_evaluator,
                     sets_tqdm_postfix=True)
                 torch.cuda.empty_cache()
 

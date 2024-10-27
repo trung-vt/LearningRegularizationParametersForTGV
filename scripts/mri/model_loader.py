@@ -5,8 +5,8 @@ from pathlib import Path
 from utils.makepath import makepath as mkp
 from config.config_loader import load_config
 from networks.mri_pdhg_net import MriPdhgNet
-# from networks.unet import UNet
-from networks.unet_2d import UNet2d
+# from networks.denoising_pdhg_net import DenoisingPdhgNet
+from scripts.unet_loader import UnetLoader
 
 
 class ModelLoader:
@@ -33,6 +33,10 @@ class ModelLoader:
         if device is not None:
             self.config["device"] = device
         print(f"Loading model on device: {self.config['device']}")
+        self.unet_loader = UnetLoader(
+            unet_config=self.config["unet"],
+            device=self.config["device"]
+        )
 
     def device(self) -> Union[str, torch.device]:
         return self.config["device"]
@@ -54,11 +58,11 @@ class ModelLoader:
         return full_model_path
 
     def load_pretrained_model(
-            self, root_dir: Optional[Union[str, Path]]) -> MriPdhgNet:
+            self, root_dir: Optional[Union[str, Path]], model: torch.nn.Module
+    ) -> torch.nn.Module:
         is_state_dict = self.config["log"]["is_state_dict"]
         full_path = mkp(root_dir, self.get_full_model_path())
         if is_state_dict:
-            model = self.init_new_model()
             state_dict = torch.load(
                 full_path,
                 map_location=self.device()
@@ -71,19 +75,59 @@ class ModelLoader:
             )
         return model
 
-    def init_new_model(self) -> MriPdhgNet:
+    # def load_pretrained_denoising_model(
+    #         self, root_dir: Optional[Union[str, Path]]) -> DenoisingPdhgNet:
+    #     denoising_pdhg_net = self.init_new_denoising_model()
+    #     return self.load_pretrained_model(root_dir, denoising_pdhg_net)
+
+    def load_pretrained_mri_model(
+            self, root_dir: Optional[Union[str, Path]]) -> MriPdhgNet:
+        mri_pdhg_net = self.init_new_mri_model()
+        return self.load_pretrained_model(root_dir, mri_pdhg_net)
+
+    # def init_new_denoising_model(self) -> DenoisingPdhgNet:
+    #     pdhg_config = self.config["pdhg"]
+    #     regularisation = pdhg_config["regularisation"]
+    #     pdhg_net = self.init_denoising_pdhg_net(regularisation)
+    #     print(f"PDHG net device: {pdhg_net.device}")
+    #     # unet = self.unet_loader.init_unet_2d(
+    #     unet = self.unet_loader.init_unet(
+    #         uses_complex_numbers=True)
+    #     pdhg_net.cnn = unet.to(self.device())
+    #     return pdhg_net.to(self.device())
+
+    def init_new_mri_model(self) -> MriPdhgNet:
         pdhg_config = self.config["pdhg"]
         regularisation = pdhg_config["regularisation"]
         pdhg_net = self.init_mri_pdhg_net(regularisation)
         print(f"PDHG net device: {pdhg_net.device}")
-        unet = self.init_unet()
+        # unet = self.unet_loader.init_unet_2d(
+        unet = self.unet_loader.init_unet(
+            uses_complex_numbers=True)
         pdhg_net.cnn = unet.to(self.device())
         return pdhg_net.to(self.device())
+
+    # def init_denoising_pdhg_net(
+    #         self, pdhg_algorithm: Literal["tv", "tgv"]) -> DenoisingPdhgNet:
+    #     pdhg_config = self.config["pdhg"]
+    #     pdhg_net = DenoisingPdhgNet(
+    #         device=self.device(),
+    #         pdhg_algorithm=pdhg_algorithm,
+    #         T=pdhg_config["T"],
+    #         cnn=None,
+    #         params_config=pdhg_config["params"],
+    #         # Bounds for the lambda values
+    #         low_bound=pdhg_config["low_bound"],
+    #         up_bound=pdhg_config["up_bound"],
+    #         # NOTE: could not use "constant" or "zeros" padding for some reason
+    #         padding="reflect"
+    #     )
+    #     return pdhg_net.to(self.device())
 
     def init_mri_pdhg_net(
             self, pdhg_algorithm: Literal["tv", "tgv"]) -> MriPdhgNet:
         pdhg_config = self.config["pdhg"]
-        tgv_pdhg_net = MriPdhgNet(
+        pdhg_net = MriPdhgNet(
             device=self.device(),
             pdhg_algorithm=pdhg_algorithm,
             T=pdhg_config["T"],
@@ -95,42 +139,4 @@ class ModelLoader:
             # NOTE: could not use "constant" or "zeros" padding for some reason
             padding="reflect"
         )
-        return tgv_pdhg_net.to(self.device())
-
-    # def init_unet(self) -> UNet:
-    def init_unet(self) -> UNet2d:
-        unet_config = self.config["unet"]
-        # unet = UNet(
-        #     dim=2,
-        #     n_ch_in=unet_config["in_channels"],
-        #     n_ch_out=unet_config["out_channels"],
-        #     n_filters=unet_config["init_filters"],
-        #     n_enc_stages=unet_config["n_blocks"],
-        #     n_convs_per_stage=2,
-        #     kernel_size=3,
-        #     res_connection=False,
-        #     bias=True,
-        #     padding_mode="zeros"
-        # ).to(self.device())
-
-        unet = UNet2d(
-            in_channels=unet_config["in_channels"],
-            out_channels=unet_config["out_channels"],
-            init_filters=unet_config["init_filters"],
-            n_blocks=unet_config["n_blocks"],
-            activation=unet_config["activation"],
-            downsampling_kernel=unet_config["downsampling_kernel"],
-            downsampling_mode=unet_config["downsampling_mode"],
-            upsampling_kernel=unet_config["upsampling_kernel"],
-            upsampling_mode=unet_config["upsampling_mode"],
-        ).to(self.device())
-
-        with torch.no_grad():
-            # Make sure the bias works with complex numbers?
-            def bias_to_zero(m):
-                if hasattr(m, "bias") and m.bias is not None:
-                    m.bias.data.fill_(0)
-            unet.apply(bias_to_zero)
-            # force initial lambdas to be closer to lower bound / zero
-            unet.c1x1.bias.fill_(-1.0)
-        return unet
+        return pdhg_net.to(self.device())

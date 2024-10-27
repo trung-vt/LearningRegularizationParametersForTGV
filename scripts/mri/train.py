@@ -1,5 +1,6 @@
 from argparse import ArgumentParser
 from pathlib import Path
+from tqdm import tqdm
 
 
 parser = ArgumentParser()
@@ -44,5 +45,5 @@ elif args.application == "mri":
 else:
     raise ValueError(f"Unsupported application: {args.application}")
 
-trainer = Trainer(args=args)
-trainer.train()
+trainer = Trainer(args=args, tqdm=tqdm)
+# trainer.train()
