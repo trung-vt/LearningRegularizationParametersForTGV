@@ -34,40 +34,46 @@ def get_prepared_config(
     config_file = mkp(
         root_dir,
         # "tmp", model_name, "config.yaml")
-        "scripts", "mri", "pretrained", model_id, "config.yaml")
+        # "scripts", "mri",
+        "pretrained", model_id,
+        "config.yaml")
     config = load_config(config_file, is_training=False, root_dir=root_dir)
     return config
 
 
 def get_config_and_model(
         model_id: Literal["u_tv", "u_tgv"],
+        state_dict_file: str,
         device: Union[str, torch.device],
         root_dir: Union[str, Path],
 ):
-    if model_id == "u_tv":
-        # model_name = "mri_model_09_14-14_37-good_TV-sigma_to_0_2-R_from_4"
-        # state_dict_file = "model_state_dict_20.pth"
-        state_dict_file = "u_tv-model_state_dict_20-cpu.pth"
-    elif model_id == "u_tgv":
-        # model_name = "mri_model_09_12-23_02-good_TGV-sigma_to_0_2-R_from_4"
-        # state_dict_file = "model_state_dict_30.pth"
-        state_dict_file = "u_tgv-model_state_dict_30-cpu.pth"
-    else:
-        raise ValueError(
-            f"Invalid model_id. Expected 'u_tv' or 'u_tgv', got '{model_id}'")
+    # if model_id == "u_tv":
+    #     # model_name = "mri_model_09_14-14_37-good_TV-sigma_to_0_2-R_from_4"
+    #     # state_dict_file = "model_state_dict_20.pth"
+    #     # state_dict_file = "u_tv-model_state_dict_20-cpu.pth"
+    #     state_dict_file = "model_state_dict_30.pth"
+    # elif model_id == "u_tgv":
+    #     # model_name = "mri_model_09_12-23_02-good_TGV-sigma_to_0_2-R_from_4"
+    #     # state_dict_file = "model_state_dict_30.pth"
+    #     # state_dict_file = "u_tgv-model_state_dict_30-cpu.pth"
+    #     state_dict_file = "model_state_dict_30.pth"
+    # else:
+    #     raise ValueError(
+    #         f"Invalid model_id. Expected 'u_tv' or 'u_tgv', got '{model_id}'")
 
     config = get_prepared_config(model_id=model_id, root_dir=root_dir)
 
     config["log"]["model_filename"] = state_dict_file
     model_dir = mkp(
-        root_dir,
+        # root_dir,
         # "tmp", model_name)
-        "scripts", "mri", "pretrained", model_id)
+        # "scripts", "mri",
+        "pretrained", model_id)
     config["log"]["save_dir"] = model_dir
     config["device"] = device
     model_loader = ModelLoader(
         config_choice=config, is_training=False)
-    net = model_loader.load_pretrained_model()
+    net = model_loader.load_pretrained_model(root_dir=root_dir)
     net.eval()
     print(f"{model_id} model loaded")
     return config, net
