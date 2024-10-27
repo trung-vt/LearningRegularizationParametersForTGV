@@ -1,10 +1,12 @@
 from argparse import ArgumentParser
 from pathlib import Path
 
-from scripts.mri.trainer import Trainer
-
 
 parser = ArgumentParser()
+parser.add_argument("--application", dest="application", type=str,
+                    choices=["denoising", "mri"],
+                    help="The application to run. " +
+                    "Currently supporting 'denoising' and 'mri'.")
 parser.add_argument("--config", dest="config", type=str,
                     help="[Required] Path to the config file.")
 parser.add_argument("--output_dir", dest="output_dir", type=Path,
@@ -35,8 +37,12 @@ parser.add_argument("--savefile", dest="savefile", type=str,
 args = parser.parse_args()
 print(f"Initial config choice: {args.config}")
 
-trainer = Trainer(
-    config_choice=args.config,
-    is_training=True
-)
+if args.application == "denoising":
+    from scripts.denoising.trainer import Trainer
+elif args.application == "mri":
+    from scripts.mri.trainer import Trainer
+else:
+    raise ValueError(f"Unsupported application: {args.application}")
+
+trainer = Trainer(args=args)
 trainer.train()
