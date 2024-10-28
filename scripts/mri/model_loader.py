@@ -101,8 +101,8 @@ class ModelLoader:
         regularisation = pdhg_config["regularisation"]
         pdhg_net = self.init_mri_pdhg_net(regularisation)
         print(f"PDHG net device: {pdhg_net.device}")
-        # unet = self.unet_loader.init_unet_2d(
-        unet = self.unet_loader.init_unet(
+        # unet = self.unet_loader.init_unet(
+        unet = self.unet_loader.init_unet_2d(
             uses_complex_numbers=True)
         pdhg_net.cnn = unet.to(self.device())
         return pdhg_net.to(self.device())
