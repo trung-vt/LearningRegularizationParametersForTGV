@@ -73,7 +73,10 @@ def get_config_and_model(
     config["device"] = device
     model_loader = ModelLoader(
         config_choice=config, is_training=False)
-    net = model_loader.load_pretrained_model(root_dir=root_dir)
+    mri_pdhg_net = model_loader.init_new_mri_model()
+    net = model_loader.load_pretrained_model(
+        root_dir=root_dir, model=mri_pdhg_net
+    )
     net.eval()
     print(f"{model_id} model loaded")
     return config, net
@@ -83,9 +86,13 @@ def get_data_config_and_models(
         device: Union[str, torch.device], root_dir: Union[str, Path],
 ) -> Tuple[MriPdhgNet, MriPdhgNet]:
     config_tv, u_tv_net = get_config_and_model(
-        model_id="u_tv", root_dir=root_dir, device=device)
+        model_id="u_tv", root_dir=root_dir, device=device,
+        state_dict_file="u_tv-model_state_dict_20-cpu.pth"
+        )
     config_tgv, u_tgv_net = get_config_and_model(
-        model_id="u_tgv", root_dir=root_dir, device=device)
+        model_id="u_tgv", root_dir=root_dir, device=device,
+        state_dict_file="u_tgv-model_state_dict_30-cpu.pth"
+        )
     data_config = config_tv["data"]
     return data_config, u_tv_net, u_tgv_net
 
@@ -135,6 +142,7 @@ class TestImageSaver:
 
         self.dataset = get_dataset(
             action="test",
+            dataset_type="preprocessed",
             data_config=self.data_config,
             acceleration_factor_R=self.acc_factor_R,
             gaussian_noise_standard_deviation_sigma=self.gaussian_noise_sigma,
@@ -147,27 +155,27 @@ class TestImageSaver:
         self.num_rows = 3
         self.num_cols = 4
 
-    def save_colorbar(
-            self,
-            min_val: Union[int, float],
-            max_val: Union[int, float],
-            cmap: Union[str, Colormap],
-            out_path: Union[str, Path],
-            # fraction_of_line_width: float,
-    ):
-        fraction_of_line_width = self.fraction_of_line_width
-        fig = plt.figure()
-        height_to_width_ratio = self.height_to_width_ratio
-        set_dim(
-            fig,
-            fraction_of_line_width=fraction_of_line_width,   # Adjust font size
-            ratio=height_to_width_ratio   # Height/Width ratio
-        )
-        print(f"Saving colorbar to {str(out_path)}")
-        make_colorbar(
-            min_val=min_val, max_val=max_val,
-            leq_min=True, geq_max=True,
-            cmap=cmap, out_path=out_path)
+    # def save_colorbar(
+    #         self,
+    #         min_val: Union[int, float],
+    #         max_val: Union[int, float],
+    #         cmap: Union[str, Colormap],
+    #         out_path: Union[str, Path],
+    #         # fraction_of_line_width: float,
+    # ):
+    #     fraction_of_line_width = self.fraction_of_line_width
+    #     fig = plt.figure()
+    #     height_to_width_ratio = self.height_to_width_ratio
+    #     set_dim(
+    #         fig,
+    #         fraction_of_line_width=fraction_of_line_width,   # Adjust font size
+    #         ratio=height_to_width_ratio   # Height/Width ratio
+    #     )
+    #     print(f"Saving colorbar to {str(out_path)}")
+    #     make_colorbar(
+    #         min_val=min_val, max_val=max_val,
+    #         leq_min=True, geq_max=True,
+    #         cmap=cmap, out_path=out_path)
 
     def save_as_image(
             self,
@@ -273,14 +281,14 @@ class TestImageSaver:
         savemat(
             mkp(out_dir, f"{filename}-abs" + ".mat"), {"data": arr_real_np})
         fraction_of_line_width = self.fraction_of_line_width
-        self.save_colorbar(
-            min_val=clip_range[0], max_val=clip_range[1], cmap=cmap,
-            out_path=mkp(
-                out_dir,
-                f"{filename}-colorbar-{fraction_of_line_width}".replace(".", "_") +
-                ".png"),
-            # fraction_of_line_width=fraction_of_line_width
-        )
+        # self.save_colorbar(
+        #     min_val=clip_range[0], max_val=clip_range[1], cmap=cmap,
+        #     out_path=mkp(
+        #         out_dir,
+        #         f"{filename}-colorbar-{fraction_of_line_width}".replace(".", "_") +
+        #         ".png"),
+        #     # fraction_of_line_width=fraction_of_line_width
+        # )
         num_rows = self.num_rows
         num_cols = self.num_cols
         if num_rows is not None and num_cols is not None and \
@@ -323,9 +331,9 @@ class TestImageSaver:
         u_tgv_net = self.u_tgv_net
         enc_obj = self.enc_obj
         num_iters = self.num_iters
-        metrics_evaluator = self.metrics_evaluator
-        fraction_of_line_width = self.fraction_of_line_width
-        out_dir = self.out_dir
+        # metrics_evaluator = self.metrics_evaluator
+        # fraction_of_line_width = self.fraction_of_line_width
+        # out_dir = self.out_dir
         x_clip_range = self.x_clip_range
         kdata_clip_range = self.kdata_clip_range
         lambda1_v_clip_range = self.lambda1_v_clip_range
@@ -370,11 +378,17 @@ class TestImageSaver:
 
         batch_kdata = enc_obj.apply_A(batch_x_true, csm=None, mask=None)
 
+        fft_dims = (-2, -1)
+        kdata_shifted = torch.fft.ifftshift(batch_kdata[0], dim=fft_dims) #will have k-space center at center
+        batch_kdata_shifted = kdata_shifted.unsqueeze(0)
+
         fig, axs = plt.subplots(num_rows, num_cols, figsize=(20, 15))
 
         self.save_as_image(
             sample_idx=sample_idx, batch_x_true=batch_x_true,
-            batch_complex=batch_kdata, image_name="kdata",
+            # batch_complex=batch_kdata,
+            batch_complex=batch_kdata_shifted,
+            image_name="kdata",
             clip_range=kdata_clip_range,
             # out_dir=out_dir,
             # fig=fig,
@@ -391,18 +405,30 @@ class TestImageSaver:
             # num_rows=num_rows, num_cols=num_cols,
             subplot_index=2)
 
+        undersampling_kmask_shifted = torch.fft.ifftshift(
+            batch_undersampling_kmask[0], dim=fft_dims) #will have k-space center at center
+        batch_undersampling_kmask_shifted = undersampling_kmask_shifted.unsqueeze(0)
+
         self.save_as_image(
             sample_idx=sample_idx,
-            batch_complex=batch_undersampling_kmask, image_name="mask",
+            # batch_complex=batch_undersampling_kmask,
+            batch_complex=batch_undersampling_kmask_shifted,
+            image_name="mask",
             # acc_factor_R=dataset.acc_factor_R,
             # out_dir=out_dir,
             # fig=fig,
             # fraction_of_line_width=fraction_of_line_width,
             # num_rows=num_rows, num_cols=num_cols,
             subplot_index=3)
+
+        kdata_corrupted_shifted = torch.fft.ifftshift(batch_kdata_corrupted[0], dim=fft_dims) #will have k-space center at center
+        batch_kdata_corrupted_shifted = kdata_corrupted_shifted.unsqueeze(0)
+
         self.save_as_image(
             sample_idx=sample_idx,
-            batch_complex=batch_kdata_corrupted, image_name="kdata_corrupted",
+            # batch_complex=batch_kdata_corrupted,
+            batch_complex=batch_kdata_corrupted_shifted,
+            image_name="kdata_corrupted",
             clip_range=kdata_clip_range,
             # acc_factor_R=dataset.acc_factor_R,
             # gaussian_noise_sigma=dataset.gaussian_noise_sigma,
