@@ -47,6 +47,8 @@ def get_dataset(
                 mkp(generated_dir, filename), map_location=device)
 
         scaled_x_true = x_true_complex * scale_factor
+        # scaled_x_true = torch.load(
+        #     scaled_x_true_file_path, map_location=device)
 
         dataset = MriPreProcessedDataset(
             all_rescaled_x_true_complex=scaled_x_true,
