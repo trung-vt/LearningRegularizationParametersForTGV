@@ -43,7 +43,10 @@ class Trainer:
         torch.set_default_device(device)
         print(f"Device choice: {device}")
 
-        pdhg_net = model_loader.init_new_mri_model()
+        if args.loads_pretrained:
+            pdhg_net = model_loader.load_pretrained_mri_model()
+        else:
+            pdhg_net = model_loader.init_new_mri_model()
         print(f"Regularization: {pdhg_net.pdhg_solver.pdhg_algorithm}")
 
         print(f"Data path: {model_loader.config['data']['data_path']}")
@@ -68,18 +71,24 @@ class Trainer:
             weight_decay=model_loader.config["train"]["weight_decay"]
         )
         sched = WarmupLR(torch.optim.lr_scheduler.CosineAnnealingLR(
-                optim,
+                optimizer=optim,
                 # (args.Nepochs - args.warmup) * len(training_data_loader),
-                (model_loader.config["train"]["expected_num_epochs"] - 1) *
-                len(training_data_loader),
+                T_max=(
+                    model_loader.config["train"]["expected_num_epochs"] - 1
+                ) * len(training_data_loader),
+                # T_max=(
+                #     model_loader.config["train"]["expected_num_epochs"] *
+                #     len(training_data_loader)
+                # ),
                 # eta_min=args.lr / 30, verbose=False
                 # eta_min=1e-3 / 30,
-                eta_min=learning_rate / 30,
+                # eta_min=learning_rate / 30,
                 # verbose=False
             ),
             # init_lr=args.lr / 30,
             # init_lr=1e-3 / 30,
             init_lr=learning_rate / 30,
+            # init_lr=learning_rate,
             # num_warmup=args.warmup * len(training_data_loader)
             # num_warmup=1 * len(training_data_loader)
             num_warmup=(
@@ -132,17 +141,18 @@ class Trainer:
             train_logger.current_epoch = epoch
             pdhg_net.train(True)
 
-            training_data_iterator = tqdm(training_data_loader)
             train_avg_metrics = perform_epoch(
+                data_loader=training_data_loader,
                 perform_iteration=mri_iteration.perform_iteration,
-                data_iterator=training_data_iterator,
+                is_training=True,
                 # model=pdhg_net,
                 logger=train_logger,
-                is_training=True,
                 # metrics_evaluator=metrics_evaluator,
                 learning_rate_scheduler=sched,
                 optimizer=optim,
-                sets_tqdm_postfix=True)
+                tqdm=tqdm,
+                sets_tqdm_postfix=True,
+            )
 
             pdhg_net.train(False)
 
@@ -151,15 +161,16 @@ class Trainer:
                 torch.cuda.empty_cache()
                 val_logger.current_epoch = epoch
 
-                validation_data_iterator = tqdm(validation_data_loader)
                 val_avg_metrics = perform_epoch(
+                    data_loader=validation_data_loader,
                     perform_iteration=mri_iteration.perform_iteration,
-                    data_iterator=validation_data_iterator,
+                    is_training=False,
                     # model=pdhg_net,
                     logger=val_logger,
-                    is_training=False,
                     # metrics_evaluator=metrics_evaluator,
-                    sets_tqdm_postfix=True)
+                    tqdm=tqdm,
+                    sets_tqdm_postfix=True,
+                )
                 torch.cuda.empty_cache()
 
             if wandb.run is not None:

@@ -68,11 +68,13 @@ class ModelLoader:
                 map_location=self.device()
             )
             model.load_state_dict(state_dict)
+            print(f"Loaded model state dict from {full_path}")
         else:
             model = torch.load(
                 full_path,
                 map_location=self.device()
             )
+            print(f"Loaded model from {full_path}")
         return model
 
     # def load_pretrained_denoising_model(
@@ -81,7 +83,7 @@ class ModelLoader:
     #     return self.load_pretrained_model(root_dir, denoising_pdhg_net)
 
     def load_pretrained_mri_model(
-            self, root_dir: Optional[Union[str, Path]]) -> MriPdhgNet:
+            self, root_dir: Union[str, Path] = ".") -> MriPdhgNet:
         mri_pdhg_net = self.init_new_mri_model()
         return self.load_pretrained_model(root_dir, mri_pdhg_net)
 
@@ -101,7 +103,9 @@ class ModelLoader:
         regularisation = pdhg_config["regularisation"]
         pdhg_net = self.init_mri_pdhg_net(regularisation)
         print(f"PDHG net device: {pdhg_net.device}")
+        # print("Using old U-Net implementation!")
         # unet = self.unet_loader.init_unet(
+        print("Using my U-Net implementation!")
         unet = self.unet_loader.init_unet_2d(
             uses_complex_numbers=True)
         pdhg_net.cnn = unet.to(self.device())

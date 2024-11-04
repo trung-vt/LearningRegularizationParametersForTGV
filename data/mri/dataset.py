@@ -78,9 +78,12 @@ class MriDynamicallyGeneratedDataset(MriBaseDataset):
 
     def __getitem__(self, idx):
         single_rescaled_x_true_complex = self.all_rescaled_x_true_complex[idx]
-        single_rescaled_x_corrupted, kdata_corrupted, undersampling_kmask = \
+        single_rescaled_x_corrupted, kdata_corrupted, undersampling_kmask, \
+            acceleration_factor_R, gaussian_noise_std_dev = \
             self.get_corrupted_data(
                 x_true=single_rescaled_x_true_complex)
+        self.current_acceleration_factor_R = acceleration_factor_R
+        self.current_gaussian_noise_std_dev = gaussian_noise_std_dev
         return (
             single_rescaled_x_corrupted,
             single_rescaled_x_true_complex,

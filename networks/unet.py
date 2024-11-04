@@ -24,6 +24,7 @@ class ConvBlock(nn.Module):
         padding_mode="zeros",
     ):
         super().__init__()
+        print("Using old U-Net implementation!")
 
         if dim == 1:
             conv_op = nn.Conv1d

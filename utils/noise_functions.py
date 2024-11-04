@@ -46,8 +46,8 @@ def add_gaussian_noise(kdata, mask, noise_var=0.05, seed=0):
                 x ~ N(0, sigma**2 / 2 * Id) and y ~ N(0, sigma**2 / 2 * Id)
     """
 
-    torch.manual_seed(seed)
-    np.random.seed(seed)
+    # torch.manual_seed(seed)
+    # np.random.seed(seed)
 
     sampling_op = SamplingOperator2D()
 

@@ -1,18 +1,19 @@
 import torch
-from typing import Callable, Optional, Tuple, Any, Union
+from typing import Callable, Optional, Tuple, Any
 
 from scripts.logger import Logger
 
 
 def perform_epoch(
-        data_iterator: Union[torch.utils.data.DataLoader, Any],
-        logger: Logger,
-        is_training: bool,
+        data_loader: torch.utils.data.DataLoader,
         perform_iteration: Callable[[Any], Tuple[torch.Tensor, float, float]],
+        is_training: bool,
+        logger: Logger,
         learning_rate_scheduler: Optional[
             torch.optim.lr_scheduler._LRScheduler] = None,
         optimizer: Optional[torch.optim.Optimizer] = None,
-        sets_tqdm_postfix: bool = False
+        tqdm: Optional[Callable] = None,
+        sets_tqdm_postfix: bool = False,
 ) -> torch.Tensor:
     """
     Perform an epoch of training or validation.
@@ -28,8 +29,14 @@ def perform_epoch(
     total_metrics = torch.zeros(3)      # loss, psnr, ssim
     # min_val = torch.inf
     # max_val = -torch.inf
-
+    if tqdm is not None:
+        data_iterator = tqdm(data_loader)
+    else:
+        data_iterator = data_loader
     for idx, data in enumerate(data_iterator):
+        # from data.mri.data_generator import DataGenerator
+        # print(f"Random int: {DataGenerator.get_random_int(4, 8)}")
+        # print(f"Random float: {DataGenerator.get_random_float(0.00, 0.2)}")
         loss, psnr, ssim = perform_iteration(data)
 
         new_metrics = torch.tensor([loss.detach(), psnr, ssim])
@@ -50,13 +57,17 @@ def perform_epoch(
             optimizer.step()
 
         if sets_tqdm_postfix:
+            assert tqdm is not None
             # Assume the metrics are ordered correctly: loss, psnr, ssim
-            data_iterator.set_postfix({
+            postfix_dict = {
                 "loss": f"{new_metrics[0].item():.4f}",
                 # "spatial": f"{spatial_min:.2f}/{spatial_max:.2f}"
                 "PSNR": f"{new_metrics[1].item():.2f}",
-                "SSIM": f"{new_metrics[2].item():.4f}"
-            })
+                "SSIM": f"{new_metrics[2].item():.4f}",
+                "R": data_loader.dataset.current_acceleration_factor_R,
+                "sigma": data_loader.dataset.current_gaussian_noise_std_dev,
+            }
+            data_iterator.set_postfix(postfix_dict)
 
     avg_metrics = total_metrics / len(data_iterator)
     # print(f"min_val = {min_val}")

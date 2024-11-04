@@ -35,6 +35,10 @@ parser.add_argument("--logs_local", dest="logs_local", type=bool,
                     default=True)
 parser.add_argument("--savefile", dest="savefile", type=str,
                     help="The file to save the model state dict and config.")
+parser.add_argument("--loads_pretrained", dest="loads_pretrained", type=bool,
+                    help="Whether to load a pretrained model. " +
+                    "Default to False.",
+                    default=False)
 args = parser.parse_args()
 print(f"Initial config choice: {args.config}")
 

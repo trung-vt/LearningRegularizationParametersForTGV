@@ -96,25 +96,22 @@ class DecodeBlock2d(nn.Module):
                     scale_factor=(2, 2),
                     # Is there any difference if align_corners is True or
                     # False? Preserving symmetry?
-                    mode='bilinear', align_corners=False),
+                    mode='bilinear',
+                    # align_corners=False),
+                    align_corners=True),
                 # 1x1 convolution to reduce the number of channels while
                 # keeping the size the same
                 nn.Conv2d(
                     in_channels, in_channels // 2,
-                    # kernel_size=(1, 1),
-                    # stride=(1, 1),
-                    kernel_size=(3, 3),
-                    stride=(2, 2),
+                    kernel_size=(1, 1),
+                    stride=(1, 1),
                     padding=(0, 0)
                 )
             )
             self.up_conv = nn.Conv2d(
                 in_channels, in_channels // 2,
-                # kernel_size=(1, 1),
                 kernel_size=(3, 3),
                 stride=(1, 1),
-                # stride=(2, 2),
-                # padding=(0, 0),
                 padding=(1, 1),
                 # padding_mode="zeros"
             )
@@ -141,19 +138,19 @@ class DecodeBlock2d(nn.Module):
             activation=activation)
 
     def forward(self, x: torch.Tensor, x_encoder_output: torch.Tensor):
-        # x = self.upsampling(x)
-        x_encoder_output_shape = x_encoder_output.shape
-        x = nn.functional.interpolate(
-            input=x, size=x_encoder_output_shape[2:], mode='bilinear',
-            align_corners=False)
-        x = self.up_conv(x)
+        x = self.upsampling(x)
+        # x_encoder_output_shape = x_encoder_output.shape
+        # x = nn.functional.interpolate(
+        #     input=x, size=x_encoder_output_shape[2:], mode='bilinear',
+        #     align_corners=False)
+        # x = self.up_conv(x)
 
         # print(f"x_encoder_output.shape = {x_encoder_output.shape}")
         # print(f"x.shape = {x.shape}")
 
         # skip-connection. # No cropping since the size is the same.
-        x = torch.cat([x, x_encoder_output], dim=1)
-        # x = torch.cat([x_encoder_output, x], dim=1)
+        # x = torch.cat([x, x_encoder_output], dim=1)
+        x = torch.cat([x_encoder_output, x], dim=1)
         x = self.double_conv(x)
         return x
 
@@ -201,6 +198,7 @@ class UNet2d(nn.Module):
         # print(f"isinstance(self, UNet2d) = {isinstance(self, UNet2d)}")
         super(UNet2d, self).__init__()
         # super(nn.Module, self).__init__()
+        print("Using my own UNet2d class")
 
         self.c0x0 = DoubleConv(  # TODO: Find a better variable name
             in_channels=in_channels,

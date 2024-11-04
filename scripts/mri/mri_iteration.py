@@ -19,7 +19,7 @@ class MriIteration:
             self,
             data: Tuple[
                 torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor],
-    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, float, float]:
+    ) -> Tuple[torch.Tensor, float, float]:
         x_corrupted, x_true, kdata_corrupted, undersampling_kmask = data
         coil_sensitive_map = None
 

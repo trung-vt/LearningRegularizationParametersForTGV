@@ -15,19 +15,40 @@ class DataGenerator:
                 "min_acceleration_factor_R"]
             self.max_acceleration_factor_R = data_config[
                 "max_acceleration_factor_R"]
-            self.min_gaussian_noise_variance = data_config[
+            self.min_gaussian_noise_std_dev = data_config[
                 "min_standard_deviation_sigma"]
-            self.max_gaussian_noise_variance = data_config[
+            self.max_gaussian_noise_std_dev = data_config[
                 "max_standard_deviation_sigma"]
         self.EncObj = Cart2DEncObj()
         self.device = device
 
     @staticmethod
     def get_random_int(min_val: int, max_val: int) -> int:
-        return torch.randint(min_val, max_val, (1,)).item()
+        """
+
+        Parameters
+        ----------
+        min_val : int
+            Minimum value of the random integer.
+        max_val : int
+            Maximum value of the random integer.
+            Note: The random integer will be in the range [min_val, max_val]
+            (inclusive).
+        """
+        return torch.randint(min_val, max_val + 1, (1,)).item()
 
     @staticmethod
     def get_random_float(min_val: float, max_val: float) -> float:
+        """
+
+        Parameters
+        ----------
+        min_val : float
+            Minimum value of the random float.
+        max_val : float
+            Maximum value of the random float.
+            The random float will be in the range [min_val, max_val].
+        """
         return torch.rand(1).item() * (max_val - min_val) + min_val
 
     def get_undersampling_kmask(self, shape: torch.Size) -> torch.Tensor:
@@ -46,8 +67,8 @@ class DataGenerator:
         return add_gaussian_noise(
             kdata=kdata, mask=undersampling_kmask,
             noise_var=DataGenerator.get_random_float(
-                self.min_gaussian_noise_variance,
-                self.max_gaussian_noise_variance))[0]
+                self.min_gaussian_noise_std_dev,
+                self.max_gaussian_noise_std_dev))[0]
 
     def get_corrupted_kdata(
             self,
@@ -80,13 +101,22 @@ class DataGenerator:
         x_true = x_true.unsqueeze(0)
         sigma = gaussian_noise_standard_deviation_sigma
         if acceleration_factor_R is None:
-            acceleration_factor_R = DataGenerator.get_random_float(
+            # print(f"min_acceleration_factor_R: {self.min_acceleration_factor_R}")
+            # print(f"max_acceleration_factor_R: {self.max_acceleration_factor_R}")
+            # acceleration_factor_R = DataGenerator.get_random_float(
+            acceleration_factor_R = DataGenerator.get_random_int(
                 self.min_acceleration_factor_R,
                 self.max_acceleration_factor_R)
+            # print(f"acceleration_factor_R: {acceleration_factor_R}")
+            # print(
+            #     f"type(acceleration_factor_R): {type(acceleration_factor_R)}")
         if sigma is None:
+            # print(f"min_gaussian_noise_std_dev: {self.min_gaussian_noise_std_dev}")
+            # print(f"max_gaussian_noise_std_dev: {self.max_gaussian_noise_std_dev}")
             sigma = DataGenerator.get_random_float(
-                self.min_gaussian_noise_variance,
-                self.max_gaussian_noise_variance)
+                self.min_gaussian_noise_std_dev,
+                self.max_gaussian_noise_std_dev)
+            # print(f"sigma: {sigma}")
         corrupted_kdata, undersampling_kmask = self.get_corrupted_kdata(
             x_true=x_true,
             acceleration_factor_R=acceleration_factor_R,
@@ -95,8 +125,12 @@ class DataGenerator:
         corrupted_x = self.EncObj.apply_AH(
             k=corrupted_kdata, csm=coil_sensitivity_map,
             mask=undersampling_kmask)
+        # self.current_acceleration_factor_R = acceleration_factor_R
+        # self.current_gaussian_noise_std_dev = sigma
         # Remove batch dimension before returning.
         return (
             corrupted_x.squeeze(0),
             corrupted_kdata.squeeze(0),
-            undersampling_kmask.squeeze(0))
+            undersampling_kmask.squeeze(0),
+            acceleration_factor_R, sigma
+        )
