@@ -9,9 +9,9 @@ description = "Learn regularisation parameter maps for MRI image reconstruction 
 authors = [
     { name = "trung-vt", email = "trung.vuthanh24@gmail.com" }
 ]
+# Runtime dependencies
 dependencies = [
     "torch",
-    "wheel"
 ]
 
 [tool.setuptools.packages.find]
@@ -25,3 +25,6 @@ include = [
     "scripts",
     "utils"
 ]
+
+[tool.setuptools.package-data]
+"reg_learn" = ["data/*"]
