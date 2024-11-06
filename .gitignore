@@ -143,6 +143,8 @@ wandb/
 
 *.mat
 cuda/
+*.npy
+*.pt
 
 # Pre-trained models
 networks/pre_trained_models/mri
@@ -151,3 +153,8 @@ pretrained/u_tv/*.pth
 notebooks/mri/*.pt
 model_*.pt
 *.pth
+
+results copy/
+
+# data
+data/mri_data/
