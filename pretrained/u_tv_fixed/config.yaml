@@ -1,0 +1,99 @@
+# device: cpu
+device: cuda
+log:
+  project: example_mri_tv
+  model_name: example_mri_tv
+  architecture: UNET-PDHG
+  # wandb_mode: offline
+  wandb_mode: online
+  checkpoint: 0
+  saves_model_by_epoch: true
+  local_model_saving_interval: 1
+  wandb_to_local_ratio: 5
+  save_dir: tmp/example_mri_tv        # Example save directory for testing
+  # save_dir: pretrained/real_model   # Choose the desired directory
+  intermediate_train_metrics_log_freq_by_iter: 100
+  intermediate_val_metrics_log_freq_by_iter: 999
+  intermediate_test_metrics_log_freq_by_iter: 1
+  metrics:
+    - PSNR
+    - SSIM
+  is_state_dict: true
+data:
+  dataset: mri
+  data_path: tmp/mri_data
+  train_file_name: x_true_train_3000.pt
+  val_file_name: x_true_val_150.pt
+  test_file_name: x_true_test_302.pt
+  data_scale_factor: 1000
+  loading_method: dynamically_noised
+
+  # train_num_samples: 10     # Made smaller for testing
+  train_num_samples: 3000  # Actual value used in the report
+  # val_num_samples: 10      # Made smaller for testing
+  val_num_samples: 150   # Actual value used in the report
+  test_num_samples: 302
+  img_size: 320
+  min_standard_deviation_sigma: 0.0
+  max_standard_deviation_sigma: 0.2
+  min_acceleration_factor_R: 4
+  max_acceleration_factor_R: 8
+  R_data_type: int
+  batch_size: 1
+  random_seed: 42
+unet:
+  in_channels: 2  # TODO: Why 2?
+  out_channels: 2
+  # init_filters: 32
+  init_filters: 128
+  n_blocks: 4
+  activation: LeakyReLU
+  downsampling_kernel: [2, 2]
+  downsampling_mode: max_pool
+  upsampling_kernel: [2, 2]
+  upsampling_mode: linear_interpolation
+train:
+  optimizer: Adam
+  # learning_rate: 0.001   # 1e-3
+  learning_rate: 0.0001   # 1e-4
+  warmup: 1   # Then multiplied by the number of training batches
+  weight_decay: 0.00001   # 1e-5
+  loss_function: MSELoss
+  random_seed: 42
+  # num_epochs: 2       # Made smaller for testing
+  # num_epochs: 100   # Actual value used in the report
+  num_epochs: 1000
+  expected_num_epochs: 50
+  start_epoch: 0
+  loads_pretrained: false
+pdhg:
+  regularisation: tv
+  L: sqrt(1 + 8)  # Not really used, already hard-coded
+
+  params:
+    # If we want to learn the parameters, set the following to true
+    # and the initial values of the scaling parameters
+    # learns_alpha: true
+    # inital_alpha: 10.0
+    learns_sigma_and_tau: true
+    initial_beta: 0.0   # Determines whether initial sigma is larger or smaller than initial tau. 0.0 means they are equal. Positive values mean sigma is larger, negative values mean tau is larger.
+    # learns_theta: true
+    # initial_theta_raw: 10.0
+
+    # # If we set the above flags to false, set the constants here
+    learns_alpha: false
+    # learns_sigma_and_tau: false
+    # constant_sigma: 0.33333
+    # constant_tau: 0.33333
+    learns_theta: false
+    constant_theta: 1
+
+  low_bound: 0
+  up_bound: null
+  constraint_activation: softplus
+  # constraint_activation: sigmoid
+  softplus_beta: 5
+  # T: 64     # Made smaller for testing
+  T: 256  # Actual value used in the report
+  uses_scalar_lambda0: false
+  uses_scalar_lambda1: false

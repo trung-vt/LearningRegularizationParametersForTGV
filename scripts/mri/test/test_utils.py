@@ -11,20 +11,21 @@ from typing import Literal, Optional, Union, Dict, Any, Tuple, Callable
 from utils.makepath import makepath as mkp
 from config.config_loader import load_config
 from data.mri.data_loader import get_dataset
+from data.mri.dataset import MriPreProcessedDataset
 from networks.mri_pdhg_net import MriPdhgNet
 from scripts.mri.model_loader import ModelLoader
 from encoding_objects.cart_2d_enc_obj import Cart2DEncObj
 from utils.metrics import ImageMetricsEvaluator
-from utils.visualize import make_colorbar
+# from utils.visualize import make_colorbar
 
-from sithom.plot import set_dim
+# from sithom.plot import set_dim
 
 
 def get_prepared_config(
         model_id: Literal["u_tv", "u_tgv"], root_dir: Union[str, Path],
 ) -> Dict[str, Any]:
-    assert model_id in ["u_tv", "u_tgv"], \
-        f"Invalid model_id. Expected 'u_tv' or 'u_tgv', got '{model_id}'"
+    # assert model_id in ["u_tv", "u_tgv"], \
+    #     f"Invalid model_id. Expected 'u_tv' or 'u_tgv', got '{model_id}'"
 
     # if model_id == "u_tv":
     #     model_name = "mri_model_09_14-14_37-good_TV-sigma_to_0_2-R_from_4"
@@ -82,19 +83,19 @@ def get_config_and_model(
     return config, net
 
 
-def get_data_config_and_models(
-        device: Union[str, torch.device], root_dir: Union[str, Path],
-) -> Tuple[MriPdhgNet, MriPdhgNet]:
-    config_tv, u_tv_net = get_config_and_model(
-        model_id="u_tv", root_dir=root_dir, device=device,
-        state_dict_file="u_tv-model_state_dict_20-cpu.pth"
-        )
-    config_tgv, u_tgv_net = get_config_and_model(
-        model_id="u_tgv", root_dir=root_dir, device=device,
-        state_dict_file="u_tgv-model_state_dict_30-cpu.pth"
-        )
-    data_config = config_tv["data"]
-    return data_config, u_tv_net, u_tgv_net
+# def get_data_config_and_models(
+#         device: Union[str, torch.device], root_dir: Union[str, Path],
+# ) -> Tuple[MriPdhgNet, MriPdhgNet]:
+#     config_tv, u_tv_net = get_config_and_model(
+#         model_id="u_tv", root_dir=root_dir, device=device,
+#         state_dict_file="u_tv-model_state_dict_20-cpu.pth"
+#         )
+#     config_tgv, u_tgv_net = get_config_and_model(
+#         model_id="u_tgv", root_dir=root_dir, device=device,
+#         state_dict_file="u_tgv-model_state_dict_30-cpu.pth"
+#         )
+#     data_config = config_tv["data"]
+#     return data_config, u_tv_net, u_tgv_net
 
 
 class TestImageSaver:
@@ -110,8 +111,9 @@ class TestImageSaver:
             # num_rows: int,
             # num_cols: int,
             # dataset: MriPreProcessedDataset,
-            # u_tv_net: MriPdhgNet,
-            # u_tgv_net: MriPdhgNet,
+            data_config: Dict[str, Any],
+            u_tv_net: MriPdhgNet,
+            u_tgv_net: MriPdhgNet,
             # enc_obj: Cart2DEncObj,
             num_iters: int,
             fraction_of_line_width: float,
@@ -137,8 +139,12 @@ class TestImageSaver:
         self.tqdm_progress_bar = tqdm_progress_bar
         self.out_dir = out_dir
 
-        self.data_config, self.u_tv_net, self.u_tgv_net = \
-            get_data_config_and_models(device=device, root_dir=root_dir)
+        # self.dataset = dataset
+        self.data_config = data_config
+        self.u_tv_net = u_tv_net
+        self.u_tgv_net = u_tgv_net
+        # self.data_config, self.u_tv_net, self.u_tgv_net = \
+        #     get_data_config_and_models(device=device, root_dir=root_dir)
 
         self.dataset = get_dataset(
             action="test",
