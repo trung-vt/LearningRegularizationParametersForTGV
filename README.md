@@ -41,7 +41,7 @@ We also observe that the inferred spatially varying parameter maps have a consis
 In inverse imaging problems, variational regularisation  problems of the type
 
 $$
-\min_{u\in X} \; \mathcal{D}(Au,f)+ \mathcal{R}(u;\mathrm{\Lambda})  \tag{1}
+\min_{u\in X} \ \mathcal{D}(Au,f)+ \mathcal{R}(u;\mathrm{\Lambda})  \tag{1}
 $$
 
 are widely used to compute an estimation $u\in X$, $X$ being a Banach space, of some ground truth imaging data $u_{\mathrm{true}}$ given data $f$ that satisfy the equation
@@ -58,7 +58,7 @@ The target  is to compute and subsequently use a regularisation parameter  $\mat
 In the case where $\mathcal{R}(u)=\mathrm{TV}(u)$, the Total Variation of the (grayscale) function $u: \Omega \to \mathbb{R}$ and assuming Gaussian noise, problem \eqref{intro:general_min} amounts to
 
 $$
-\min_{u \in X}\; \frac{1}{2} \| Au - f \|\_{L^2(\Omega)}^{2} + \int\_{\Omega} \Lambda (x) d |Du|. \tag{3}
+\min_{u \in X} \ \frac{1}{2} \| Au - f \|\_{L^2(\Omega)}^{2} + \int\_{\Omega} \Lambda (x) d |Du|. \tag{3}
 $$
 
 Small values of $\Lambda: \Omega \to \mathbb{R}_{+}$ impose little local regularity and are thus suitable for preserving detailed parts of the image and edges. On the other hand, high values of $\Lambda$  impose large regularity and are preferable for smooth, homogeneous areas.
