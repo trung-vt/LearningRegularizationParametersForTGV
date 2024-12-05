@@ -58,7 +58,7 @@ The target  is to compute and subsequently use a regularisation parameter  $\mat
 In the case where $\mathcal{R}(u)=\mathrm{TV}(u)$, the Total Variation of the (grayscale) function $u: \Omega \to \mathbb{R}$ and assuming Gaussian noise, problem \eqref{intro:general_min} amounts to
 
 $$
-\min_{u\in X}\; \frac{1}{2}\|Au-f\|_{L^2(\Omega)}^{2} +\int_{\Omega} \Lambda (x) d|Du|. \tag{3}
+\min_{u \in X}\; \frac{1}{2} \| Au - f \|\_{L^2(\Omega)}^{2} + \int\_{\Omega} \Lambda (x) d |Du|. \tag{3}
 $$
 
 Small values of $\Lambda: \Omega \to \mathbb{R}_{+}$ impose little local regularity and are thus suitable for preserving detailed parts of the image and edges. On the other hand, high values of $\Lambda$  impose large regularity and are preferable for smooth, homogeneous areas.
@@ -66,10 +66,10 @@ Small values of $\Lambda: \Omega \to \mathbb{R}_{+}$ impose little local regular
 For higher-order extensions of TV, especially those defined in an infimal convolution manner, the role and the interplay of spatially varying regularisation parameters on the resulting image quality and structure are not as straightforward. A prominent example is the Total Generalised Variation (TGV)
 
 $$
-\text{TGV}_{\Lambda_{0}, \Lambda_{1}}(u):=\min_{w\in \mathrm{BD}(\omega)} \int_{\Omega} \Lambda_{1}(x) d|Du-w| + \int_{\Omega} \Lambda_{0}(x)d|\mathcal{E}w|,
+\text{TGV}\_{\Lambda_{0}, \Lambda_{1}}(u):=\min_{w\in \mathrm{BD}(\omega)} \int_{\Omega} \Lambda_{1}(x) d|Du-w| + \int_{\Omega} \Lambda_{0}(x)d|\mathcal{E}w|,
 $$
 
-where $\Lambda: \Omega \to (\mathbb{R}_{+})^{2}$, with $\Lambda=(\Lambda_{0}, \Lambda_{1})$. Here, $\mathcal{E}$ denotes the measure that represents the distributional symmetrised gradient of $w\in \mathrm{BD}(\Omega)$, the space of functions of bounded deformations.
+where $\Lambda: \Omega \to (\mathbb{R}\_{+})^{2}$, with $\Lambda=(\Lambda_{0}, \Lambda_{1})$. Here, $\mathcal{E}$ denotes the measure that represents the distributional symmetrised gradient of $w\in \mathrm{BD}(\Omega)$, the space of functions of bounded deformations.
 The combined values of $\Lambda_{0}$ and $\Lambda_{1}$ not only regulate the regularisation intensity but also control the staircasing effect, which is a characteristic limitation of  TV, with suitable values of these parameters promoting piecewise affine structures.
 
 ### Contribution
@@ -180,11 +180,11 @@ Since the CNN is expressive enough, given some new data $f^{\mathrm{test}}$, it 
 Please open an issue or email ttv22@cam.ac.uk.
 
 ## Roadmap
-<!-- - [ ] Update README -->
+<!-- - [ ] Update README
 - [ ] Add more doctests
     - [ ] Add test for CPU
     - [ ] Add test for CUDA
-    - [ ] Add test for MPS
+    - [ ] Add test for MPS -->
 
 ## Contributing
 <!-- Please feel free to contribute.
