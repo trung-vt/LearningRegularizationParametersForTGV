@@ -33,10 +33,6 @@ class ModelLoader:
         if device is not None:
             self.config["device"] = device
         print(f"Loading model on device: {self.config['device']}")
-        self.unet_loader = UnetLoader(
-            unet_config=self.config["unet"],
-            device=self.config["device"]
-        )
 
     def device(self) -> Union[str, torch.device]:
         return self.config["device"]
@@ -106,7 +102,11 @@ class ModelLoader:
         # print("Using old U-Net implementation!")
         # unet = self.unet_loader.init_unet(
         print("Using my U-Net implementation!")
-        unet = self.unet_loader.init_unet_2d(
+        unet_loader = UnetLoader(
+            unet_config=self.config["unet"],
+            device=self.device()
+        )
+        unet = unet_loader.init_unet_2d(
             uses_complex_numbers=True)
         pdhg_net.cnn = unet.to(self.device())
         return pdhg_net.to(self.device())
