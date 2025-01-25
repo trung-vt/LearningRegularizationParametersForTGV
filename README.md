@@ -19,6 +19,13 @@ If you have not installed the requirements:
 pip install -r requirements.txt
 ```
 
+To generate data (TODO: Add instructions to generate data):
+
+```bash
+```
+
+Alternatively, you can download the data from the following link: [TODO: Add link to the data]
+
 Start training:
 ```bash
 # Assume you are in the root directory of the repository

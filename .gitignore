@@ -158,3 +158,6 @@ results copy/
 
 # data
 data/mri_data/
+
+# Temporary files
+README.pdf
