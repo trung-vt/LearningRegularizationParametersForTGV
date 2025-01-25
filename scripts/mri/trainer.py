@@ -37,7 +37,7 @@ class Trainer:
 
         device = args.device
         if device is None:
-            device = model_loader.device
+            device = model_loader.device()
         else:
             model_loader.config["device"] = device
         torch.set_default_device(device)
