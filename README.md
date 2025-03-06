@@ -4,11 +4,22 @@ This repository contains the code for the paper "Deep unrolling for learning opt
 
 
 ## Project status
-This project is currently being reviewed for publication.
+This project is currently being reviewed for publication. The instructions to generate the data and the link to download the data will be added soon.
+The link to download the pretrained models and instructions to evaluate the model will also be added soon.
 
 
 ## Requirements
 Please see the `requirements.txt` file for the required packages.
+To create a new Python environment for this project, you can run the following commands:
+```bash
+# Create a new Python environment
+python -m venv env_utgv
+# Activate the environment
+source env_utgv/bin/activate
+# Install the required packages
+pip install -r requirements.txt
+```
+
 
 ## Quick start
 
@@ -19,14 +30,17 @@ If you have not installed the requirements:
 pip install -r requirements.txt
 ```
 
-To generate data (TODO: Add instructions to generate data):
+To generate data [TODO: Add instructions to generate data]: 
+The instructions to generate the data will be added soon.
 
 ```bash
 ```
 
-Alternatively, you can download the data from the following link: [TODO: Add link to the data]
+Alternatively, you can download the data from the following link [TODO: Add link to the data]: 
+We are waiting for permission from the owner to share the data.
+Once that is done, we will add the link to the data.
 
-Start training:
+Start training the model: The model can be trained using the script `train.py` in the `scripts/mri` directory. For example, to train the model for MRI reconstruction using the TGV regularisation with the config as defined in the `config/example_mri_tgv_config.yaml` file on the CPU, you can run the following command:
 ```bash
 # Assume you are in the root directory of the repository
 # and you have installed the requirements.
@@ -34,7 +48,41 @@ python scripts/mri/train.py --application mri --config config/example_mri_tgv_co
 # Change to cuda for GPU or mps for Apple processors.
 # Set `--uses_wandb True` to use Weights and Biases.
 ```
+There are different arguments that can be passed to the script. 
+You can see the list of arguments by running:
+```bash
+python scripts/mri/train.py --help
+```
+Here is the list of arguments as of the time of writing:
+```bash
+  --application {denoising,mri}
+                        The application to run. Currently supporting 'denoising' and 'mri'.
+  --config CONFIG       [Required] Path to the config file.
+  --output_dir OUTPUT_DIR
+                        The output directory to store the `.pth` state dict file and other logs. If provided, overwrite the
+                        config.
+  --device DEVICE       The device to use for training. If provided, overwrite the config. Recommend 'cuda' if GPU is
+                        available.
+  --uses_wandb USES_WANDB
+                        Whether to use WandB for logging. Default to False.
+  --logs_local LOGS_LOCAL
+                        Whether to log locally. If provided without value, save the config and other logs locally. If not
+                        provided, still save the config and other logs locally by default. Need to explicitly set to False
+                        to disable.
+  --savefile SAVEFILE   The file to save the model state dict and config.
+  --loads_pretrained LOADS_PRETRAINED
+                        Whether to load a pretrained model. Default to False.
+```
 
+Evaluate the model [TODO: Convert notebooks to a script to evaluate the model and produce the results]:
+Download the pretrained models from [TODO: Add link to download the pretrained models].
+The instructions to evaluate the model will be added soon.
+
+```bash
+```
+
+You can also use the notebook `test_example.ipynb`
+in `scripts/mri` to produce some example images.
 
 ## Description
 
@@ -177,16 +225,21 @@ Since the CNN is expressive enough, given some new data $f^{\mathrm{test}}$, it 
   </tr>
 </table>
 
-## Installation
+<!-- ## Installation -->
 <!-- Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection. -->
 
-## Usage
+<!-- ## Usage -->
 <!-- Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README. -->
 
 ## Support
 Please open an issue or email ttv22@cam.ac.uk.
 
 ## Roadmap
+- [ ] Add instructions to generate data
+- [ ] Add link to download the data
+- [ ] Add link to download the pretrained models
+- [ ] Convert notebooks in `notebooks/mri` to scripts to evaluate the model and produce the results (for example, the `generate_results.ipynb` notebook)
+- [ ] Clean up the notebook `test_example.ipynb`
 <!-- - [ ] Update README
 - [ ] Add more doctests
     - [ ] Add test for CPU
