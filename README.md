@@ -1,11 +1,6 @@
 # Deep unrolling for learning optimal spatially varying regularisation parameters for Total Generalised Variation
 
-This repository contains the code for the paper "Deep unrolling for learning optimal spatially varying regularisation parameters for Total Generalised Variation" (link to the paper) by Thanh Trung Vu, Andreas Kofler, and Kostas Papafitsoros.
-
-
-## Project status
-This project is currently being reviewed for publication. The instructions to generate the data and the link to download the data will be added soon.
-The link to download the pretrained models and instructions to evaluate the model will also be added soon.
+This repository contains the code for the paper "Deep unrolling for learning optimal spatially varying regularisation parameters for Total Generalised Variation" ([https://arxiv.org/abs/2502.16532](https://arxiv.org/abs/2502.16532)) by Thanh Trung Vu, Andreas Kofler, and Kostas Papafitsoros.
 
 
 ## Requirements
@@ -30,13 +25,13 @@ If you have not installed the requirements:
 pip install -r requirements.txt
 ```
 
-To generate data [TODO: Add instructions to generate data]: 
+To generate data [TODO: Add instructions to generate data]:
 The instructions to generate the data will be added soon.
 
 ```bash
 ```
 
-Alternatively, you can download the data from the following link [TODO: Add link to the data]: 
+Alternatively, you can download the data from the following link [TODO: Add link to the data]:
 We are waiting for permission from the owner to share the data.
 Once that is done, we will add the link to the data.
 
@@ -48,7 +43,7 @@ python scripts/mri/train.py --application mri --config config/example_mri_tgv_co
 # Change to cuda for GPU or mps for Apple processors.
 # Set `--uses_wandb True` to use Weights and Biases.
 ```
-There are different arguments that can be passed to the script. 
+There are different arguments that can be passed to the script.
 You can see the list of arguments by running:
 ```bash
 python scripts/mri/train.py --help
