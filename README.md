@@ -1,5 +1,95 @@
 # Deep unrolling for learning optimal spatially varying regularisation parameters for Total Generalised Variation
 
+<!-- ### Visuals -->
+
+<!-- <div style="display: flex; justify-content: space-between;">
+
+  <div style="text-align: left;">
+    <img src="results/sample_0-kdata_corrupted-R_8-sigma_0_05.png"
+    alt="k-data" width="300px"/>
+    <p>k-data</p>
+  </div>
+
+  <div style="text-align: left;">
+    <img src="results/sample_0-zero_filled-R_8-sigma_0_05-PSNR_24_00-SSIM_0_6041.png"
+    alt="Zero-filled" width="300px"/>
+    <p>Zero-filled</p>
+  </div>
+
+  <div style="text-align: left;">
+    <img src="results/sample_0/R_8-sigma_0_05/T_256/sample_0-tgv-lambda1_v_0_01-lambda0_w_0_02-R_8-sigma_0_05-T_256-abs-PSNR_25_65-SSIM_0_7204.png"
+    alt="Scalar TGV" width="300px"/>
+    <p>Scalar TGV</p>
+  </div>
+
+  <div style="text-align: left;">
+    <img src="results/sample_0-u_tgv-R_8-sigma_0_05-T_256-PSNR_27_59-SSIM_0_7829.png"
+    alt="U-TGV" width="300px"/>
+    <p>U-TGV</p>
+  </div>
+
+  <div style="text-align: left;">
+    <img src="results/sample_0-ground_truth.png"
+    alt="Ground truth" width="300px"/>
+    <p>Ground truth</p>
+  </div>
+
+</div> -->
+
+<!-- <p align="center">
+  <img src="results/sample_0-ground_truth.png" alt="Image 1" width="19%"/>
+  <img src="results/sample_0-ground_truth.png" alt="Image 1" width="19%"/>
+  <img src="results/sample_0-ground_truth.png" alt="Image 1" width="19%"/>
+  <img src="results/sample_0-ground_truth.png" alt="Image 1" width="19%"/>
+  <img src="results/sample_0-ground_truth.png" alt="Image 1" width="19%"/>
+</p> -->
+
+<!-- <p align="center">
+  <div style="display:inline-block; width:19%; text-align:center;">
+    Block 1 Text
+  </div>
+  <div style="display:inline-block; width:19%; text-align:center;">
+    Block 2 Text
+  </div>
+  <div style="display:inline-block; width:19%; text-align:center;">
+    Block 3 Text
+  </div>
+  <div style="display:inline-block; width:19%; text-align:center;">
+    Block 4 Text
+  </div>
+  <div style="display:inline-block; width:19%; text-align:center;">
+    Block 5 Text
+  </div>
+</p> -->
+
+<table style="border-collapse: collapse; width: 100%;">
+  <tr>
+    <td style="border: none; text-align: center; width: 20%;">
+        <img src="results/sample_0-kdata_corrupted-R_8-sigma_0_05.png"
+        alt="k-data" style="width: 100%;"></td>
+    <td style="border: none; text-align: center; width: 20%;">
+        <img src="results/sample_0-zero_filled-R_8-sigma_0_05-PSNR_24_00-SSIM_0_6041.png"
+        alt="Zero-filled" style="width: 100%;"></td>
+    <td style="border: none; text-align: center; width: 20%;">
+        <img src="results/sample_0/R_8-sigma_0_05/T_256/sample_0-tgv-lambda1_v_0_01-lambda0_w_0_02-R_8-sigma_0_05-T_256-abs-PSNR_25_65-SSIM_0_7204.png"
+        alt="Scalar TGV" style="width: 100%;"></td>
+    <td style="border: none; text-align: center; width: 20%;">
+        <img src="results/sample_0-u_tgv-R_8-sigma_0_05-T_256-PSNR_27_59-SSIM_0_7829.png"
+        alt="U-TGV" style="width: 100%;"></td>
+    <td style="border: none; text-align: center; width: 20%;">
+        <img src="results/sample_0-ground_truth.png"
+        alt="Ground truth" style="width: 100%;"></td>
+  </tr>
+  <tr>
+    <td style="border: none; text-align: center;">k-data</td>
+    <td style="border: none; text-align: center;">Zero-filled</td>
+    <td style="border: none; text-align: center;">Scalar TGV</td>
+    <td style="border: none; text-align: center;">U-TGV</td>
+    <td style="border: none; text-align: center;">Ground truth</td>
+  </tr>
+</table>
+
+
 This repository contains the code for the paper "Deep unrolling for learning optimal spatially varying regularisation parameters for Total Generalised Variation" ([https://arxiv.org/abs/2502.16532](https://arxiv.org/abs/2502.16532)) by Thanh Trung Vu, Andreas Kofler, and Kostas Papafitsoros.
 
 
@@ -130,95 +220,6 @@ and outputs the maps $\Lambda_{0}, \Lambda_{1}$. To tie these maps to the variat
 Since the CNN is expressive enough, given some new data $f^{\mathrm{test}}$, it is able to produce meaningful parameter-maps adapted to $f^{\mathrm{test}}$. We show that this approach produces far better results than similar approaches in image denoising and MR image reconstruction, significantly boosting the performance of TGV. We also show that in contrast to the TV, the structure of the resulting TGV parameter maps is non-trivial and asks for further theoretical investigation.
 
 
-
-### Visuals
-
-<!-- <div style="display: flex; justify-content: space-between;">
-
-  <div style="text-align: left;">
-    <img src="results/sample_0-kdata_corrupted-R_8-sigma_0_05.png"
-    alt="k-data" width="300px"/>
-    <p>k-data</p>
-  </div>
-
-  <div style="text-align: left;">
-    <img src="results/sample_0-zero_filled-R_8-sigma_0_05-PSNR_24_00-SSIM_0_6041.png"
-    alt="Zero-filled" width="300px"/>
-    <p>Zero-filled</p>
-  </div>
-
-  <div style="text-align: left;">
-    <img src="results/sample_0/R_8-sigma_0_05/T_256/sample_0-tgv-lambda1_v_0_01-lambda0_w_0_02-R_8-sigma_0_05-T_256-abs-PSNR_25_65-SSIM_0_7204.png"
-    alt="Scalar TGV" width="300px"/>
-    <p>Scalar TGV</p>
-  </div>
-
-  <div style="text-align: left;">
-    <img src="results/sample_0-u_tgv-R_8-sigma_0_05-T_256-PSNR_27_59-SSIM_0_7829.png"
-    alt="U-TGV" width="300px"/>
-    <p>U-TGV</p>
-  </div>
-
-  <div style="text-align: left;">
-    <img src="results/sample_0-ground_truth.png"
-    alt="Ground truth" width="300px"/>
-    <p>Ground truth</p>
-  </div>
-
-</div> -->
-
-<!-- <p align="center">
-  <img src="results/sample_0-ground_truth.png" alt="Image 1" width="19%"/>
-  <img src="results/sample_0-ground_truth.png" alt="Image 1" width="19%"/>
-  <img src="results/sample_0-ground_truth.png" alt="Image 1" width="19%"/>
-  <img src="results/sample_0-ground_truth.png" alt="Image 1" width="19%"/>
-  <img src="results/sample_0-ground_truth.png" alt="Image 1" width="19%"/>
-</p> -->
-
-<!-- <p align="center">
-  <div style="display:inline-block; width:19%; text-align:center;">
-    Block 1 Text
-  </div>
-  <div style="display:inline-block; width:19%; text-align:center;">
-    Block 2 Text
-  </div>
-  <div style="display:inline-block; width:19%; text-align:center;">
-    Block 3 Text
-  </div>
-  <div style="display:inline-block; width:19%; text-align:center;">
-    Block 4 Text
-  </div>
-  <div style="display:inline-block; width:19%; text-align:center;">
-    Block 5 Text
-  </div>
-</p> -->
-
-<table style="border-collapse: collapse; width: 100%;">
-  <tr>
-    <td style="border: none; text-align: center; width: 20%;">
-        <img src="results/sample_0-kdata_corrupted-R_8-sigma_0_05.png"
-        alt="k-data" style="width: 100%;"></td>
-    <td style="border: none; text-align: center; width: 20%;">
-        <img src="results/sample_0-zero_filled-R_8-sigma_0_05-PSNR_24_00-SSIM_0_6041.png"
-        alt="Zero-filled" style="width: 100%;"></td>
-    <td style="border: none; text-align: center; width: 20%;">
-        <img src="results/sample_0/R_8-sigma_0_05/T_256/sample_0-tgv-lambda1_v_0_01-lambda0_w_0_02-R_8-sigma_0_05-T_256-abs-PSNR_25_65-SSIM_0_7204.png"
-        alt="Scalar TGV" style="width: 100%;"></td>
-    <td style="border: none; text-align: center; width: 20%;">
-        <img src="results/sample_0-u_tgv-R_8-sigma_0_05-T_256-PSNR_27_59-SSIM_0_7829.png"
-        alt="U-TGV" style="width: 100%;"></td>
-    <td style="border: none; text-align: center; width: 20%;">
-        <img src="results/sample_0-ground_truth.png"
-        alt="Ground truth" style="width: 100%;"></td>
-  </tr>
-  <tr>
-    <td style="border: none; text-align: center;">k-data</td>
-    <td style="border: none; text-align: center;">Zero-filled</td>
-    <td style="border: none; text-align: center;">Scalar TGV</td>
-    <td style="border: none; text-align: center;">U-TGV</td>
-    <td style="border: none; text-align: center;">Ground truth</td>
-  </tr>
-</table>
 
 <!-- ## Installation -->
 <!-- Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection. -->
