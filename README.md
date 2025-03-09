@@ -84,7 +84,7 @@
     <td style="border: none; text-align: center;">k-data</td>
     <td style="border: none; text-align: center;">Zero-filled</td>
     <td style="border: none; text-align: center;">Scalar TGV</td>
-    <td style="border: none; text-align: center;">U-TGV</td>
+    <td style="border: none; text-align: center;"><b>U-TGV</b></td>
     <td style="border: none; text-align: center;">Ground truth</td>
   </tr>
 </table>
