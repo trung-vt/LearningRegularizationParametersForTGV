@@ -64,19 +64,19 @@
 
 <table style="border-collapse: collapse; width: 100%;">
   <tr>
-    <td style="border: none; text-align: center; width: 20%;">
+    <td style="border: none; text-align: center; width: 19%;">
         <img src="results/sample_0-kdata_corrupted-R_8-sigma_0_05.png"
         alt="k-data" style="width: 100%;"></td>
-    <td style="border: none; text-align: center; width: 20%;">
+    <td style="border: none; text-align: center; width: 19%;">
         <img src="results/sample_0-zero_filled-R_8-sigma_0_05-PSNR_24_00-SSIM_0_6041.png"
         alt="Zero-filled" style="width: 100%;"></td>
-    <td style="border: none; text-align: center; width: 20%;">
+    <td style="border: none; text-align: center; width: 19%;">
         <img src="results/sample_0/R_8-sigma_0_05/T_256/sample_0-tgv-lambda1_v_0_01-lambda0_w_0_02-R_8-sigma_0_05-T_256-abs-PSNR_25_65-SSIM_0_7204.png"
         alt="Scalar TGV" style="width: 100%;"></td>
-    <td style="border: none; text-align: center; width: 20%;">
+    <td style="border: none; text-align: center; width: 19%;">
         <img src="results/sample_0-u_tgv-R_8-sigma_0_05-T_256-PSNR_27_59-SSIM_0_7829.png"
         alt="U-TGV" style="width: 100%;"></td>
-    <td style="border: none; text-align: center; width: 20%;">
+    <td style="border: none; text-align: center; width: 19%;">
         <img src="results/sample_0-ground_truth.png"
         alt="Ground truth" style="width: 100%;"></td>
   </tr>
