@@ -73,7 +73,7 @@
     <td style="border: none; text-align: center; width: 19%;">
         <img src="results/sample_0/R_8-sigma_0_05/T_256/sample_0-tgv-lambda1_v_0_01-lambda0_w_0_02-R_8-sigma_0_05-T_256-abs-PSNR_25_65-SSIM_0_7204.png"
         alt="Scalar TGV" style="width: 100%;"></td>
-    <td style="border: none; text-align: center; width: 19%;">
+    <td style="border: none; text-align: center; width: 20%;">
         <img src="results/sample_0-u_tgv-R_8-sigma_0_05-T_256-PSNR_27_59-SSIM_0_7829.png"
         alt="U-TGV" style="width: 100%;"></td>
     <td style="border: none; text-align: center; width: 19%;">
