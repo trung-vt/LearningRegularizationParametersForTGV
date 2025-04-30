@@ -231,6 +231,7 @@ Since the CNN is expressive enough, given some new data $f^{\mathrm{test}}$, it 
 Please open an issue or email ttv22@cam.ac.uk.
 
 ## Roadmap
+- [ ] Add description of the data: training, validation, and test data
 - [ ] Add instructions to generate data
 - [ ] Add link to download the data
 - [ ] Add link to download the pretrained models
