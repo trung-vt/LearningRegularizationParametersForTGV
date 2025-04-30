@@ -237,6 +237,7 @@ Please open an issue or email ttv22@cam.ac.uk.
 - [ ] Add link to download the pretrained models
 - [ ] Convert notebooks in `notebooks/mri` to scripts to evaluate the model and produce the results (for example, the `generate_results.ipynb` notebook)
 - [ ] Clean up the notebook `test_example.ipynb`
+- [ ] Create readthedocs documentation
 <!-- - [ ] Update README
 - [ ] Add more doctests
     - [ ] Add test for CPU
