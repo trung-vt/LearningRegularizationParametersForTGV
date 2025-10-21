@@ -83,7 +83,7 @@ class Logger:
                 return csv_file
             else:
                 raise FileExistsError(
-                    "Overwrite is not allowed. " +
+                    f"File '{csv_file}' already exists. Overwrite is not allowed. " +
                     "Set 'force_overwrite' to True to overwrite.")
         with open(csv_file, "w") as f:
             f.write(f"{headers}\n")

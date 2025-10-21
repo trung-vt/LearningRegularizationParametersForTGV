@@ -64,8 +64,7 @@ def perform_epoch(
                 # "spatial": f"{spatial_min:.2f}/{spatial_max:.2f}"
                 "PSNR": f"{new_metrics[1].item():.2f}",
                 "SSIM": f"{new_metrics[2].item():.4f}",
-                "R": data_loader.dataset.current_acceleration_factor_R,
-                "sigma": data_loader.dataset.current_gaussian_noise_std_dev,
+                **data_loader.dataset.current_config,
             }
             data_iterator.set_postfix(postfix_dict)
 

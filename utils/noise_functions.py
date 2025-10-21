@@ -3,27 +3,20 @@
 
 import torch
 import torch.nn as nn
-import numpy as np
+import matplotlib.pyplot as plt
 
 from math import sqrt
 
 
-class SamplingOperator2D(nn.Module):
+class CartesianSamplingOperator2D(nn.Module):
     """Module that selects the non-zero k-space coefficients
     from a zero-filled k-space data sampled on a Cartesian grid."""
 
-    def __init__(
-        self,
-    ) -> None:
-        super().__init__()
-
-    def forward(self, kspace_data, mask):
+    def forward(self, kspace_data: torch.Tensor, mask: torch.Tensor):
 
         # check that for all temporal points the number of samples lines
         # is the same
         if mask is not None:
-            if not isinstance(mask, torch.Tensor):
-                mask = torch.tensor(mask)
             nb, nc, Nx, _ = kspace_data.shape
             n_sampled_lines = int(torch.tensor(torch.sum(mask[0, 0, :]).abs().item()))
 
@@ -38,7 +31,28 @@ class SamplingOperator2D(nn.Module):
         return kspace_data
 
 
-def add_gaussian_noise(kdata, mask, noise_var=0.05, seed=0):
+class LowFieldSamplingOperator2D(nn.Module):
+    """Module that selects the non-zero k-space coefficients
+    from a zero-filled k-space data sampled on a low-field grid."""
+
+    def forward(self, kspace_data: torch.Tensor, mask: torch.Tensor):
+        if mask is not None:
+            nb, nc, _, _ = kspace_data.shape
+            n_k0 = int(torch.tensor(torch.sum(mask[0, :, 0]).abs().item()))
+            n_k1 = int(torch.tensor(torch.sum(mask[0, 0, :]).abs().item()))
+
+            # restrict k-space data to acquired k-space coefficients
+            kspace_data = torch.masked_select(kspace_data, mask.to(torch.bool)).view(
+                nb,
+                nc,
+                n_k0,
+                n_k1
+            )
+
+        return kspace_data
+
+
+def add_gaussian_noise(kdata: torch.Tensor, mask, sampling_op, noise_var=0.05, rng=None):
     """
     add gaussian noise with chosen variance to k-space data.
 
@@ -49,21 +63,21 @@ def add_gaussian_noise(kdata, mask, noise_var=0.05, seed=0):
     # torch.manual_seed(seed)
     # np.random.seed(seed)
 
-    sampling_op = SamplingOperator2D()
-
     kdata_noisy = kdata.clone()
 
     supp = torch.where(kdata != 0)
 
-    kdata = sampling_op(kdata, mask)
+    # kdata = kdata + noise_var * torch.std(kdata) * torch.randn(
+    #     kdata.shape, dtype=kdata.dtype, device=kdata.device, generator=rng
+    # )
+
+    kdata: torch.Tensor = sampling_op(kdata, mask)  # NOTE: shape will change here
 
     # compute mean and std
-    mu_r, std_r = torch.mean(kdata.real, dim=(2, 3), keepdim=True), torch.std(
-        kdata.real, dim=(2, 3), keepdim=True
-    )
-    mu_i, std_i = torch.mean(kdata.imag, dim=(2, 3), keepdim=True), torch.std(
-        kdata.imag, dim=(2, 3), keepdim=True
-    )
+    mu_r = torch.mean(kdata.real, dim=(2, 3), keepdim=True)
+    std_r = torch.std(kdata.real, dim=(2, 3), keepdim=True)
+    mu_i = torch.mean(kdata.imag, dim=(2, 3), keepdim=True)
+    std_i = torch.std(kdata.imag, dim=(2, 3), keepdim=True)
 
     # center k-space data
     kdata_r = (kdata.real - mu_r) / std_r

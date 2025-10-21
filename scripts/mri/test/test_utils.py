@@ -1,3 +1,4 @@
+from box import Box
 import torch
 import numpy as np
 from scipy.io import savemat
@@ -102,7 +103,9 @@ class TestImageSaver:
     def __init__(
             self,
             # sample_idx: int,
-            acc_factor_R: Optional[int],
+            # acc_factor_R: Optional[int],
+            args: str,
+            args_box: Optional[Box],
             gaussian_noise_sigma: Optional[float],
             # metrics_evaluator: ImageMetricsEvaluator,
             complex_to_real_conversion: Literal["abs", "view_as_real"],
@@ -126,7 +129,9 @@ class TestImageSaver:
             device: Union[str, torch.device],
             tqdm_progress_bar: Optional[Callable] = None,
     ):
-        self.acc_factor_R = acc_factor_R
+        # self.acc_factor_R = acc_factor_R
+        self.args = args
+        self.args_box = args_box
         self.gaussian_noise_sigma = gaussian_noise_sigma
         self.num_iters = num_iters
         self.fraction_of_line_width = fraction_of_line_width
@@ -150,7 +155,9 @@ class TestImageSaver:
             action="test",
             dataset_type="preprocessed",
             data_config=self.data_config,
-            acceleration_factor_R=self.acc_factor_R,
+            # acceleration_factor_R=self.acc_factor_R,
+            args=self.args,
+            args_box=self.args_box,
             gaussian_noise_standard_deviation_sigma=self.gaussian_noise_sigma,
             device=device)
 
@@ -250,9 +257,11 @@ class TestImageSaver:
         print(f"Saving {image_name} image")
         psnr_str, ssim_str = None, None
         filename = f"sample_{sample_idx}-{image_name}"
-        acc_factor_R = self.acc_factor_R
-        if acc_factor_R is not None:
-            filename += f"-R_{acc_factor_R}"
+        # acc_factor_R = self.acc_factor_R
+        # if acc_factor_R is not None:
+        #     filename += f"-R_{acc_factor_R}"
+        args = self.args
+        filename += f"-{args}"
         gaussian_noise_sigma = self.gaussian_noise_sigma
         if gaussian_noise_sigma is not None:
             filename += f"-sigma_{gaussian_noise_sigma:.2f}"

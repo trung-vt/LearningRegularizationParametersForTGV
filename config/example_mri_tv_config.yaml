@@ -36,6 +36,9 @@ data:
   img_size: 320
   min_standard_deviation_sigma: 0.0
   max_standard_deviation_sigma: 0.2
+
+
+  undersampling: cartesian
   min_acceleration_factor_R: 4
   max_acceleration_factor_R: 8
   batch_size: 1

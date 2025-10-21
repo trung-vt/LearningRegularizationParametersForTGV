@@ -1,3 +1,5 @@
+python-box[all]~=7.0  # for configuration files
+
 numpy==1.23.4   # numpy version 1.23.4 could not be installed on my Windows machine.
                   #   ModuleNotFoundError: No module named 'distutils'
 

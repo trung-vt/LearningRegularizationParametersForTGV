@@ -1,18 +1,17 @@
 # device: cpu
 device: cuda
 log:
-  project: example_mri_tgv
-  model_name: example_mri_tgv
+  project: example_low_field_mri_tgv
+  model_name: example_low_field_mri_tgv
   architecture: UNET-PDHG
   # wandb_mode: offline
   wandb_mode: online
   # checkpoint: 0
-  checkpoint: 17  # Load pre-trained model
+  # checkpoint: 17  # Load pre-trained model
   saves_model_by_epoch: true
   local_model_saving_interval: 1
   wandb_to_local_ratio: 5
   # save_dir: tmp/example_mri_tgv        # Example save directory for testing
-  save_dir: tmp/mri_model_10_29-20_03-New_TGV-no_padding-fixed_random  # Directory of pre-trained model
   # save_dir: pretrained/real_model   # Choose the desired directory
   intermediate_train_metrics_log_freq_by_iter: 30
   intermediate_val_metrics_log_freq_by_iter: 999
@@ -24,27 +23,28 @@ log:
 data:
   dataset: mri
   data_path: tmp/mri_data
-  train_file_name: x_true_train_3000.pt
-  val_file_name: x_true_val_150.pt
-  test_file_name: x_true_test_302.pt
+  train_file_name: x_true_zero_shot_1.pt
+  val_file_name: x_true_zero_shot_1.pt
+  test_file_name: x_true_zero_shot_1.pt
   data_scale_factor: 1000
-  loading_method: dynamically_noised
+  dataset_type: zero_shot_dynamically_generated
 
-  # train_num_samples: 10     # Made smaller for testing
-  train_num_samples: 3000  # Actual value used in the report
-  # val_num_samples: 10      # Made smaller for testing
-  val_num_samples: 150   # Actual value used in the report
-  test_num_samples: 302
+  train_num_samples: 1  # Zero-shot only needs one sample
+  val_num_samples: 1   # Should be the same sample
+  test_num_samples: 1  # Should be the same sample
   img_size: 320
   min_standard_deviation_sigma: 0.0
-  max_standard_deviation_sigma: 0.2
+  max_standard_deviation_sigma: 0.3
   # max_standard_deviation_sigma: 0.5
 
-  undersampling: cartesian
-  min_acceleration_factor_R: 4
-  # min_acceleration_factor_R: 1
-  max_acceleration_factor_R: 8
-  acceleration_factor_R_type: int
+  # undersampling: cartesian
+  # min_acceleration_factor_R: 4
+  # # min_acceleration_factor_R: 1
+  # max_acceleration_factor_R: 8
+  # acceleration_factor_R_type: int
+
+  undersampling: low_field
+  super_resolution_factor: 2.0
 
   batch_size: 1
   random_seed: 42

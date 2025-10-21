@@ -1,3 +1,4 @@
+from box import Box
 import torch
 from typing import Callable
 
@@ -28,15 +29,22 @@ class MriPreProcessedDataset(MriBaseDataset):
         all_x_corrupted: torch.Tensor,
         all_kdata_corrupted: torch.Tensor,
         all_undersampling_kmasks: torch.Tensor,
-        acc_factor_R: float, gaussian_noise_sigma: float
+        # acc_factor_R: float,
+        args: Box,
+        gaussian_noise_sigma: float
     ):
         super().__init__(
             all_x_true_complex=all_rescaled_x_true_complex, scale_factor=1)
         self.all_rescaled_x_corrupted = all_x_corrupted
         self.all_kdata_corrupted = all_kdata_corrupted
         self.all_undersampling_kmasks = all_undersampling_kmasks
-        self.acc_factor_R = acc_factor_R
+        # self.acc_factor_R = acc_factor_R
+        self.args = args
         self.gaussian_noise_sigma = gaussian_noise_sigma
+
+        print(f"Shape of corrupted data: {all_x_corrupted.shape}")
+        print(f"Shape of corrupted kdata: {all_kdata_corrupted.shape}")
+        print(f"Shape of kmasks: {all_undersampling_kmasks.shape}")
 
         def get_memory_size_in_MB(tensor: torch.Tensor) -> float:
             return tensor.element_size() * tensor.nelement() / 1024 / 1024
@@ -75,15 +83,47 @@ class MriDynamicallyGeneratedDataset(MriBaseDataset):
         super().__init__(
             all_x_true_complex=all_x_true_complex, scale_factor=scale_factor)
         self.get_corrupted_data = get_corrupted_data
+        self.current_config = None
 
     def __getitem__(self, idx):
         single_rescaled_x_true_complex = self.all_rescaled_x_true_complex[idx]
-        single_rescaled_x_corrupted, kdata_corrupted, undersampling_kmask, \
-            acceleration_factor_R, gaussian_noise_std_dev = \
-            self.get_corrupted_data(
-                x_true=single_rescaled_x_true_complex)
-        self.current_acceleration_factor_R = acceleration_factor_R
-        self.current_gaussian_noise_std_dev = gaussian_noise_std_dev
+        single_rescaled_x_corrupted, kdata_corrupted, undersampling_kmask, config = \
+            self.get_corrupted_data(x_true=single_rescaled_x_true_complex)
+        self.current_config = config
+        # single_rescaled_x_corrupted, kdata_corrupted, undersampling_kmask, \
+        #     acceleration_factor_R, gaussian_noise_std_dev = \
+        #     self.get_corrupted_data(
+        #         x_true=single_rescaled_x_true_complex)
+        # self.current_acceleration_factor_R = acceleration_factor_R
+        # self.current_gaussian_noise_std_dev = gaussian_noise_std_dev
+        return (
+            single_rescaled_x_corrupted,
+            single_rescaled_x_true_complex,
+            kdata_corrupted, undersampling_kmask)
+
+
+class MriZeroShotDynamicallyGeneratedDataset(MriBaseDataset):
+    def __init__(
+            self, all_x_true_complex: torch.Tensor, scale_factor: float,
+            original_kmask: torch.Tensor,
+            get_corrupted_data: Callable):
+        super().__init__(
+            all_x_true_complex=all_x_true_complex, scale_factor=scale_factor)
+        self.original_kmask = original_kmask
+        self.get_corrupted_data = get_corrupted_data
+        self.current_config = None
+
+    def __getitem__(self, idx):
+        single_rescaled_x_true_complex = self.all_rescaled_x_true_complex[idx]
+        single_rescaled_x_corrupted, kdata_corrupted, undersampling_kmask, config = \
+            self.get_corrupted_data(x_true=single_rescaled_x_true_complex, kmask=self.original_kmask)
+        self.current_config = config
+        # single_rescaled_x_corrupted, kdata_corrupted, undersampling_kmask, \
+        #     acceleration_factor_R, gaussian_noise_std_dev = \
+        #     self.get_corrupted_data(
+        #         x_true=single_rescaled_x_true_complex)
+        # self.current_acceleration_factor_R = acceleration_factor_R
+        # self.current_gaussian_noise_std_dev = gaussian_noise_std_dev
         return (
             single_rescaled_x_corrupted,
             single_rescaled_x_true_complex,

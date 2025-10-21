@@ -1,0 +1,140 @@
+data:
+  batch_size: 1
+  data_path: tmp/mri_data
+  data_scale_factor: 1000
+  dataset: mri
+  img_size: 320
+  loading_method: dynamically_noised
+  max_standard_deviation_sigma: 0.3
+  min_standard_deviation_sigma: 0.0
+  random_seed: 42
+  super_resolution_factor: 2.0
+  test_file_name: x_true_test_302.pt
+  test_num_samples: 302
+  train_file_name: x_true_train_3000.pt
+  train_num_samples: 3000
+  undersampling: low_field
+  val_file_name: x_true_val_150.pt
+  val_num_samples: 150
+device: cuda:1
+log:
+  architecture: UNET-PDHG
+  checkpoint: 17
+  intermediate_test_metrics_log_freq_by_iter: 1
+  intermediate_train_metrics_log_freq_by_iter: 30
+  intermediate_val_metrics_log_freq_by_iter: 999
+  is_state_dict: true
+  local_model_saving_interval: 1
+  metrics: !!python/object/new:box.box_list.BoxList
+    listitems:
+    - PSNR
+    - SSIM
+    state:
+      box_options:
+        box_class: &id001 !!python/name:box.box.Box ''
+        box_dots: false
+        box_duplicates: ignore
+        box_intact_types: !!python/tuple []
+        box_namespace: !!python/tuple
+        - log
+        - metrics
+        box_recast: null
+        box_safe_prefix: x
+        camel_killer_box: false
+        conversion_box: true
+        default_box: false
+        default_box_attr: *id001
+        default_box_create_on_get: true
+        default_box_none_transform: true
+        frozen_box: false
+        modify_tuples_box: false
+      box_org_ref: null
+  model_name: example_mri_tgv
+  project: example_mri_tgv
+  save_dir: ./tmp/low_field_mri_model_09_24-19_12
+  saves_model_by_epoch: true
+  wandb_mode: online
+  wandb_to_local_ratio: 5
+pdhg:
+  L: sqrt(1 + 8)
+  T: 256
+  constraint_activation: softplus
+  low_bound: 0
+  params:
+    constant_theta: 1
+    initial_beta: 0.0
+    learns_alpha: false
+    learns_sigma_and_tau: true
+    learns_theta: false
+  regularisation: tgv
+  softplus_beta: 5
+  up_bound: null
+  uses_scalar_lambda0: false
+  uses_scalar_lambda1: false
+train:
+  expected_num_epochs: 50
+  learning_rate: 0.0001
+  loads_pretrained: false
+  loss_function: MSELoss
+  num_epochs: 100
+  optimizer: AdamW
+  random_seed: 42
+  start_epoch: 0
+  warmup: 1
+  weight_decay: 1.0e-05
+unet:
+  activation: LeakyReLU
+  downsampling_kernel: !!python/object/new:box.box_list.BoxList
+    listitems:
+    - 2
+    - 2
+    state:
+      box_options:
+        box_class: *id001
+        box_dots: false
+        box_duplicates: ignore
+        box_intact_types: !!python/tuple []
+        box_namespace: !!python/tuple
+        - unet
+        - downsampling_kernel
+        box_recast: null
+        box_safe_prefix: x
+        camel_killer_box: false
+        conversion_box: true
+        default_box: false
+        default_box_attr: *id001
+        default_box_create_on_get: true
+        default_box_none_transform: true
+        frozen_box: false
+        modify_tuples_box: false
+      box_org_ref: null
+  downsampling_mode: max_pool
+  in_channels: 2
+  init_filters: 128
+  n_blocks: 4
+  out_channels: 2
+  upsampling_kernel: !!python/object/new:box.box_list.BoxList
+    listitems:
+    - 2
+    - 2
+    state:
+      box_options:
+        box_class: *id001
+        box_dots: false
+        box_duplicates: ignore
+        box_intact_types: !!python/tuple []
+        box_namespace: !!python/tuple
+        - unet
+        - upsampling_kernel
+        box_recast: null
+        box_safe_prefix: x
+        camel_killer_box: false
+        conversion_box: true
+        default_box: false
+        default_box_attr: *id001
+        default_box_create_on_get: true
+        default_box_none_transform: true
+        frozen_box: false
+        modify_tuples_box: false
+      box_org_ref: null
+  upsampling_mode: linear_interpolation

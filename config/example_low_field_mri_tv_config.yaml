@@ -1,20 +1,19 @@
 # device: cpu
 device: cuda
 log:
-  project: example_mri_tgv
-  model_name: example_mri_tgv
+  project: example_low_field_mri_tv
+  model_name: example_low_field_mri_tv
   architecture: UNET-PDHG
   # wandb_mode: offline
   wandb_mode: online
-  # checkpoint: 0
-  checkpoint: 17  # Load pre-trained model
+  checkpoint: 0
+  # checkpoint: 17  # Load pre-trained model
   saves_model_by_epoch: true
   local_model_saving_interval: 1
   wandb_to_local_ratio: 5
-  # save_dir: tmp/example_mri_tgv        # Example save directory for testing
-  save_dir: tmp/mri_model_10_29-20_03-New_TGV-no_padding-fixed_random  # Directory of pre-trained model
+  # save_dir: tmp/example_low_field_mri_tv        # Example save directory for testing
   # save_dir: pretrained/real_model   # Choose the desired directory
-  intermediate_train_metrics_log_freq_by_iter: 30
+  intermediate_train_metrics_log_freq_by_iter: 100
   intermediate_val_metrics_log_freq_by_iter: 999
   intermediate_test_metrics_log_freq_by_iter: 1
   metrics:
@@ -37,14 +36,17 @@ data:
   test_num_samples: 302
   img_size: 320
   min_standard_deviation_sigma: 0.0
-  max_standard_deviation_sigma: 0.2
+  max_standard_deviation_sigma: 0.3
   # max_standard_deviation_sigma: 0.5
 
-  undersampling: cartesian
-  min_acceleration_factor_R: 4
-  # min_acceleration_factor_R: 1
-  max_acceleration_factor_R: 8
-  acceleration_factor_R_type: int
+  # undersampling: cartesian
+  # min_acceleration_factor_R: 4
+  # # min_acceleration_factor_R: 1
+  # max_acceleration_factor_R: 8
+  # acceleration_factor_R_type: int
+
+  undersampling: low_field
+  super_resolution_factor: 2.0
 
   batch_size: 1
   random_seed: 42
@@ -75,7 +77,7 @@ train:
   start_epoch: 0
   loads_pretrained: false
 pdhg:
-  regularisation: tgv
+  regularisation: tv
   L: sqrt(1 + 8)  # Not really used, already hard-coded
 
   params:

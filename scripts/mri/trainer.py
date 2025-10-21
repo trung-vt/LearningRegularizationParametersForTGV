@@ -28,9 +28,11 @@ class Trainer:
             is_training=True
         )
 
+        undersampling_method = model_loader.config.data.undersampling
+
         if args.output_dir is None:
             model_loader.config["log"]["save_dir"] = \
-                f"./tmp/mri_model_{get_formatted_date()}"
+                f"./tmp/{undersampling_method}_mri_model_{get_formatted_date()}"
         else:
             model_loader.config["log"]["save_dir"] = args.output_dir
         print(f"Output directory: {model_loader.config['log']['save_dir']}")
@@ -52,11 +54,13 @@ class Trainer:
         print(f"Data path: {model_loader.config['data']['data_path']}")
         training_data_loader = get_data_loader(
             data_config=model_loader.config["data"],
-            action="train", dataset_type="dynamically_generated",
+            action="train",
+            dataset_type=model_loader.config["data"]["dataset_type"],
             device=device, sets_generator=True)
         validation_data_loader = get_data_loader(
             data_config=model_loader.config["data"],
-            action="val", dataset_type="dynamically_generated",
+            action="val",
+            dataset_type=model_loader.config["data"]["dataset_type"],
             device=device)
 
         learning_rate = model_loader.config["train"]["learning_rate"]

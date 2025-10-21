@@ -1,3 +1,4 @@
+from box import Box
 import torch
 from pathlib import Path
 from typing import Literal, Optional, Union, Dict, Any
@@ -15,7 +16,9 @@ def get_dataset(
         action: Literal["train", "val", "test"],
         device: Union[str, torch.device],
         root_dir: Union[str, Path] = ".",
-        acceleration_factor_R: Optional[int] = None,
+        # acceleration_factor_R: Optional[int] = None,
+        args: str = "",
+        args_box: Optional[Box] = None,
         gaussian_noise_standard_deviation_sigma: Optional[float] = None
 ) -> Union[
         MriBaseDataset, MriPreProcessedDataset, MriDynamicallyGeneratedDataset
@@ -41,10 +44,13 @@ def get_dataset(
         def get_generated_data(data_name: str) -> torch.Tensor:
             filename = get_test_file_name(
                 data_name=data_name, action=action,
-                acceleration_factor_R=acceleration_factor_R,
+                # acceleration_factor_R=acceleration_factor_R,
+                args=args,
                 gaussian_noise_standard_deviation_sigma=sigma)
-            return torch.load(
+            generated_data = torch.load(
                 mkp(generated_dir, filename), map_location=device)
+            print(f"Shape of loaded {data_name}: {generated_data.shape}")
+            return generated_data
 
         scaled_x_true = x_true_complex * scale_factor
         # scaled_x_true = torch.load(
@@ -56,7 +62,8 @@ def get_dataset(
             all_kdata_corrupted=get_generated_data("kdata_corrupted"),
             all_undersampling_kmasks=get_generated_data(
                 "undersampling_kmasks"),
-            acc_factor_R=acceleration_factor_R,
+            # acc_factor_R=acceleration_factor_R,
+            args=args_box,
             gaussian_noise_sigma=sigma)
 
     elif dataset_type == "dynamically_generated":
@@ -64,6 +71,12 @@ def get_dataset(
         dataset = MriDynamicallyGeneratedDataset(
             all_x_true_complex=x_true_complex, scale_factor=scale_factor,
             get_corrupted_data=data_util.get_corrupted_data)
+
+    elif dataset_type == "zero_shot_dynamically_generated":
+        data_util = DataGenerator(data_config=data_config, device=device)
+        dataset = MriDynamicallyGeneratedDataset(
+            all_x_true_complex=x_true_complex, scale_factor=scale_factor,
+            get_corrupted_data=data_util.get_zero_shot_corrupted_data)
 
     else:
         raise ValueError(
@@ -80,7 +93,8 @@ def get_data_loader(
         dataset_type: Literal["base", "preprocessed", "dynamically_generated"],
         device: Union[str, torch.device],
         root_dir: Union[str, Path] = ".",
-        acceleration_factor_R: Optional[int] = None,
+        args: str = "",
+        args_box: Optional[Box] = None,
         gaussian_noise_standard_deviation_sigma: Optional[float] = None,
         sets_generator: bool = False
 ) -> torch.utils.data.DataLoader:
@@ -92,7 +106,8 @@ def get_data_loader(
         action=action,
         device=device,
         root_dir=root_dir,
-        acceleration_factor_R=acceleration_factor_R,
+        args=args,
+        args_box=args_box,
         gaussian_noise_standard_deviation_sigma=sigma
     )
 

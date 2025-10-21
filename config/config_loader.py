@@ -1,3 +1,4 @@
+from box import Box
 import json
 import yaml
 from typing import Dict, Any, Optional, Union
@@ -20,7 +21,7 @@ def load_config(
         config_choice: Union[str, Dict[str, Any]],
         is_training: bool,
         root_dir: Optional[Union[str, Path]] = mkp("."),
-) -> Dict[str, Any]:
+) -> Box:
     """
     Load the configuration from a file or a prepared configuration.
 
@@ -46,7 +47,8 @@ def load_config(
         if extension in [".yaml", ".yml"]:    # parse yaml file
             with open(config_choice, "r") as f:
                 # Load all Python objects including pathlib.Path
-                config = yaml.load(f, Loader=yaml.FullLoader)
+                # config = yaml.load(f, Loader=yaml.FullLoader)
+                config = yaml.load(f, Loader=yaml.UnsafeLoader)
 
                 # # Only load simple, safe data types such as
                 # #   dictionaries, lists, strings, integers, and floats
@@ -62,6 +64,7 @@ def load_config(
                 f"The config choice '{config_choice}' is unsupported. " +
                 "Currently supported file formats are " +
                 "'.yaml' or '.yml', '.json'.")
+    config = Box(config)  # convert to Box for easier access
     # print(f"root_dir: {root_dir}")
     # Adjust the paths in the config
     if "log" in config:
